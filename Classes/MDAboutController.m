@@ -66,9 +66,9 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
+    if ((self = [super initWithNibName:nil bundle:nil])) {
+        self.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        self.modalPresentationStyle = UIModalPresentationFormSheet;
     }
     return self;
 }
@@ -133,12 +133,12 @@
 }
 
 /*
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-}
-*/
+ // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
+ - (void)viewDidLoad
+ {
+ [super viewDidLoad];
+ }
+ */
 
 - (void)viewDidUnload
 {
