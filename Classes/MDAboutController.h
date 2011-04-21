@@ -37,6 +37,6 @@
     UITableView *tableView;
 }
 
-- (void)dismiss:(id)sender;
+- (IBAction)dismiss:(id)sender;
 
 @end
