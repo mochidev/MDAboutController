@@ -35,6 +35,8 @@
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
     MDACTitleBar *titleBar;
     UITableView *tableView;
+    
+    NSMutableArray *credits;
 }
 
 - (IBAction)dismiss:(id)sender;

@@ -31,6 +31,8 @@
 
 #import "MDAboutController.h"
 
+#pragma mark - MDACTitleBar
+
 @interface MDACTitleBar : UIView {
     UILabel *title;
     UIButton *doneButton;
@@ -83,7 +85,187 @@
     return self;
 }
 
-@end 
+@end
+
+#pragma mark - MDACCredit Classes
+
+@interface MDACCredit : NSObject {
+    NSString *type;
+}
+
+@property(nonatomic, copy) NSString *type;
+- (id)initWithType:(NSString *)aType;
++ (id)credit;
++ (id)creditWithType:(NSString *)aType;
+
+@end
+
+@implementation MDACCredit
+
+@synthesize type;
+
+- (id)initWithType:(NSString *)aType
+{
+    if ((self = [super init])) {
+        self.type = aType;
+    }
+    return self;
+}
+
+- (id)init
+{
+    return [self initWithType:nil];
+}
+
++ (id)creditWithType:(NSString *)aType
+{
+    return [[[self alloc] initWithType:aType] autorelease];
+}
+
++ (id)credit
+{
+    return [self creditWithType:nil];
+}
+
+- (void)dealloc {
+    [type release];
+    [super dealloc];
+}
+
+@end
+
+@interface MDACCreditItem : NSObject {
+    NSString *name;
+    NSString *role;
+    NSURL *link;
+}
+
+@property(nonatomic, copy) NSString *name;
+@property(nonatomic, copy) NSString *role;
+@property(nonatomic, retain) NSURL *link;
+- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL;
+- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;
++ (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL;
++ (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;
++ (id)item;
+
+@end
+
+@implementation MDACCreditItem
+
+@synthesize name, role, link;
+
+- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL
+{
+    if ((self = [super init])) {
+        self.name = aName;
+        self.role = aRole;
+        self.link = anURL;
+    }
+    return self;
+}
+
+- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink
+{
+    return [self initWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]];
+}
+
+- (id)init
+{
+    return [self initWithName:nil role:nil linkURL:nil];
+}
+
++ (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL
+{
+    return [[[self alloc] initWithName:aName role:aRole linkURL:anURL] autorelease];
+}
+
++ (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink
+{
+    return [self itemWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]];
+}
+
++ (id)item
+{
+    return [self itemWithName:nil role:nil linkURL:nil];
+}
+
+- (void)dealloc {
+    [name release];
+    [role release];
+    [link release];
+    [super dealloc];
+}
+
+@end
+
+@interface MDACListCredit : MDACCredit {
+    NSString *title;
+    NSMutableArray *items;
+}
+
+@property(nonatomic, copy) NSString *title;
+- (id)initWithTitle:(NSString *)aTitle;
++ (id)listCreditWithTitle:(NSString *)aTitle;
+
+- (void)addItem:(MDACCreditItem *)anItem;
+- (void)removeItem:(MDACCreditItem *)anItem;
+- (MDACCreditItem *)itemAtIndex:(NSUInteger)index;
+
+@end
+
+@implementation MDACListCredit
+
+@synthesize title;
+
+- (id)initWithTitle:(NSString *)aTitle
+{
+    if ((self = [super initWithType:@"List"])) {
+        self.title = aTitle;
+        items = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
+- (id)initWithType:(NSString *)aType
+{
+    return [self initWithTitle:nil];
+}
+
++ (id)creditWithType:(NSString *)aType
+{
+    return [self listCreditWithTitle:nil];
+}
+
++ (id)listCreditWithTitle:(NSString *)aTitle
+{
+    return [[[self alloc] initWithTitle:aTitle] autorelease];
+}
+
+- (void)addItem:(MDACCreditItem *)anItem
+{
+    [items addObject:anItem];
+}
+
+- (void)removeItem:(MDACCreditItem *)anItem
+{
+    [items removeObject:anItem];
+}
+
+- (MDACCreditItem *)itemAtIndex:(NSUInteger)index
+{
+    return [items objectAtIndex:index];
+}
+
+- (void)dealloc {
+    [title release];
+    [items release];
+    [super dealloc];
+}
+
+@end
+
+#pragma mark - MDAboutController
 
 @implementation MDAboutController
 
@@ -92,6 +274,21 @@
     if ((self = [super initWithNibName:nil bundle:nil])) {
         self.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         self.modalPresentationStyle = UIModalPresentationFormSheet;
+        
+        credits = [[NSMutableArray alloc] init];
+        
+        
+        
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"plist"];
+        if (path) {
+            NSArray *creditsFile = [[NSArray alloc] initWithContentsOfFile:path];
+            if (creditsFile) {
+                
+            }
+            [creditsFile release];
+        }
+        
+        [credits release];
     }
     return self;
 }
@@ -141,6 +338,7 @@
     tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"MDACBackground.png"]];
     tableView.delegate = self;
     tableView.dataSource = self;
+    tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [rootView addSubview:tableView];
     [tableView release];
     
