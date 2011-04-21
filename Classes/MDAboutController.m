@@ -148,6 +148,8 @@
 + (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL;
 + (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;
 + (id)item;
+- (id)initWithDictionary:(NSDictionary *)aDict;
++ (id)itemWithDictionary:(NSDictionary *)aDict;
 
 @end
 
@@ -190,6 +192,18 @@
     return [self itemWithName:nil role:nil linkURL:nil];
 }
 
+- (id)initWithDictionary:(NSDictionary *)aDict
+{
+    return [self initWithName:[aDict objectForKey:@"Name"]
+                         role:[aDict objectForKey:@"Role"]
+                   linkString:[aDict objectForKey:@"Link"]];
+}
+
++ (id)itemWithDictionary:(NSDictionary *)aDict
+{
+    return [[[self alloc] initWithDictionary:aDict] autorelease];
+}
+
 - (void)dealloc {
     [name release];
     [role release];
@@ -205,8 +219,11 @@
 }
 
 @property(nonatomic, copy) NSString *title;
+@property(nonatomic, readonly) NSUInteger count;
 - (id)initWithTitle:(NSString *)aTitle;
 + (id)listCreditWithTitle:(NSString *)aTitle;
+- (id)initWithDictionary:(NSDictionary *)aDict;
++ (id)listCreditWithDictionary:(NSDictionary *)aDict;
 
 - (void)addItem:(MDACCreditItem *)anItem;
 - (void)removeItem:(MDACCreditItem *)anItem;
@@ -240,6 +257,27 @@
 + (id)listCreditWithTitle:(NSString *)aTitle
 {
     return [[[self alloc] initWithTitle:aTitle] autorelease];
+}
+
+- (id)initWithDictionary:(NSDictionary *)aDict
+{
+    if ((self = [self initWithTitle:[aDict objectForKey:@"Title"]])) {
+        NSArray *itemsList = [aDict objectForKey:@"Items"];
+        for (NSDictionary *item in itemsList) {
+            [self addItem:[MDACCreditItem itemWithDictionary:item]];
+        }
+    }
+    return self;
+}
+
++ (id)listCreditWithDictionary:(NSDictionary *)aDict
+{
+    return [[[self alloc] initWithDictionary:aDict] autorelease];
+}
+
+- (NSUInteger)count
+{
+    return [items count];
 }
 
 - (void)addItem:(MDACCreditItem *)anItem
@@ -283,18 +321,25 @@
         if (path) {
             NSArray *creditsFile = [[NSArray alloc] initWithContentsOfFile:path];
             if (creditsFile) {
-                
+                for (NSDictionary *creditDict in creditsFile) {
+                    if (creditDict) {
+                        if ([[creditDict objectForKey:@"Type"] isEqualToString:@"List"]) {
+                            [credits addObject:[MDACListCredit listCreditWithDictionary:creditDict]];
+                        } else {
+                            // more types here
+                        }
+                    }
+                }
             }
             [creditsFile release];
         }
-        
-        [credits release];
     }
     return self;
 }
 
 - (void)dealloc
 {
+    [credits release];
     [super dealloc];
 }
 
@@ -310,12 +355,76 @@
 
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"Cell";
+    static NSString *iconCellID = @"IconCell";
+    static NSString *spacerCellID = @"SpacerCell";
+    static NSString *topListCellID = @"TopListCell";
+    static NSString *middleListCellID = @"MiddleListCell";
+    static NSString *bottomListCellID = @"BottomListCell";
+    static NSString *singleListCellID = @"SingleListCell";
+    static NSString *textCellID = @"TextCell";
+    static NSString *imageCellID = @"ImageCell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    NSString *cellID;
+    MDACCredit *credit;
+    NSUInteger index, count;
+    
+    int i = 0;
+    
+    for (MDACCredit *tempCredit in credits) {
+        if ([tempCredit isMemberOfClass:[MDACListCredit class]]) {
+            count = [(MDACListCredit *)tempCredit count];
+            i += count;
+            
+            if (i > indexPath.row) {
+                credit = tempCredit;
+                index = indexPath.row - (i - count);
+                if (index >= count) {
+                    if (index == 0) {
+                        cellID = singleListCellID;
+                    } else {
+                        cellID = bottomListCellID;
+                    }
+                } else if (index == 0) {
+                    cellID = topListCellID;
+                } else {
+                    cellID = middleListCellID;
+                }
+                break;
+            }
+        } else {
+            i += 1;
+            
+            if (i > indexPath.row) {
+                credit = tempCredit;
+                break;
+            }
+        }
+        
+        i += 1;
+        
+        if (i > indexPath.row) {
+            credit = nil;
+            cellID = spacerCellID;
+            break;
+        }
+    }
+    
+    //NSLog(@"%d: %@, %@, %d", indexPath.row, cellID, credit, index);
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier] autorelease];
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:cellID] autorelease];
+        
+        if ([cellID isEqualToString:topListCellID]) {
+            
+        }
+        // .. setup all of them here
+    }
+    
+    if ([credit isMemberOfClass:[MDACListCredit class]]) {
+        cell.detailTextLabel.text = [(MDACListCredit *)credit itemAtIndex:index].name;
+        cell.textLabel.text = [(MDACListCredit *)credit itemAtIndex:index].role;
     }
     
     return cell;
@@ -323,7 +432,24 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 3;
+    NSUInteger count;
+    
+    int i = 0;
+    
+    for (MDACCredit *tempCredit in credits) {
+        if ([tempCredit isMemberOfClass:[MDACListCredit class]]) {
+            count = [(MDACListCredit *)tempCredit count];
+            i += count;
+        } else {
+            i += 1;
+        }
+        
+        i += 1;
+    }
+    
+    i -= 1;
+    
+    return i;
 }
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
