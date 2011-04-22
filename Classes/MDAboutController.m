@@ -315,7 +315,61 @@
         
         credits = [[NSMutableArray alloc] init];
         
+        NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+        NSString *versionString = nil;
         
+        if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] && [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]) {
+            versionString = [NSString stringWithFormat:@"Version %@ (%@)",
+                             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"],
+                             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
+        } else if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]) {
+            versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+        } else if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]) {
+            versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+        }
+		
+        UIImage *icon = nil;
+        
+        if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFiles"]) {
+            NSArray *iconRefs = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFiles"];
+            
+            float targetSize = 57.*[UIScreen mainScreen].scale;
+            float lastSize = 0;
+            
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                targetSize = 72;
+            }
+            
+            NSMutableArray *icons = [[NSMutableArray alloc] init];
+            
+            for (NSString *iconRef in iconRefs) {
+                UIImage *imageA = [UIImage imageNamed:iconRef];
+                
+                NSUInteger i = 0;
+                
+                for (i = 0; i < [icons count]; i++) {
+                    UIImage *imageB = [icons objectAtIndex:i];
+                    if (imageA.size.width*imageA.scale < imageB.size.width*imageB.scale)
+                        break;
+                }
+                
+                [icons insertObject:imageA atIndex:i];
+            }
+            
+            for (UIImage *testIcon in icons) {
+                if (testIcon.size.width*testIcon.scale > lastSize ) {
+                    lastSize = testIcon.size.width*testIcon.scale;
+                    icon = testIcon;
+                    
+                    if (testIcon.size.width*testIcon.scale >= targetSize)
+                        break;
+                }
+            }
+        } else {
+            icon = [UIImage imageNamed:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFile"]];
+        }
+        
+        NSLog(@"%@ %@ %@", appName, versionString, icon);
         
         NSString *path = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"plist"];
         if (path) {
