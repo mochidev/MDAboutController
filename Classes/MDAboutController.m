@@ -414,33 +414,48 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     
     UILabel *nameLabel, *roleLabel;
+    UIImageView *linkAvailableImageView;
     
     if (!cell) {
         if (cellID == topListCellID || cellID == middleListCellID || cellID == bottomListCellID || cellID == singleListCellID) {
             cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
             
             UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
+            UIView *selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
             
             UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, 44)];
+            UIImageView *selectedBackgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, 44)];
             
             if (cellID == topListCellID) {
                 backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, 45);
                 backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundTop.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
+                selectedBackgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, 45);
+                selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedTop.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
             } else if (cellID == middleListCellID) {
                 backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundMiddle.png"] stretchableImageWithLeftCapWidth:1 topCapHeight:10];
+                selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedMiddle.png"] stretchableImageWithLeftCapWidth:1 topCapHeight:10];
             } else if (cellID == bottomListCellID) {
                 backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundBottom.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
+                selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedBottom.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
             } else {
                 backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, 45);
                 backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSingle.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
+                selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedSingle.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
             }
             
             backgroundImage.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             [backgroundView addSubview:backgroundImage];
             [backgroundImage release];
             
+            selectedBackgroundImage.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            [selectedBackgroundView addSubview:selectedBackgroundImage];
+            [selectedBackgroundImage release];
+            
             cell.backgroundView = backgroundView;
             [backgroundView release];
+            
+            cell.selectedBackgroundView = selectedBackgroundView;
+            [selectedBackgroundView release];
             
             nameLabel = [[UILabel alloc] init];
             nameLabel.font = [UIFont boldSystemFontOfSize:17];
@@ -462,6 +477,13 @@
             roleLabel.tag = 2;
             [cell.contentView addSubview:roleLabel];
             [roleLabel release];
+            
+            linkAvailableImageView = [[UIImageView alloc] initWithFrame:CGRectMake(tableView.bounds.size.width-39, 9, 24, 24)];
+            linkAvailableImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+            linkAvailableImageView.image = [UIImage imageNamed:@"MDACLinkArrow.png"];
+            roleLabel.tag = 3;
+            [cell.contentView addSubview:linkAvailableImageView];
+            [linkAvailableImageView release];
         } else {
             cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
         }
@@ -469,6 +491,7 @@
         if (cellID == topListCellID || cellID == middleListCellID || cellID == bottomListCellID || cellID == singleListCellID) {
             nameLabel = (UILabel *)[cell viewWithTag:1];
             roleLabel = (UILabel *)[cell viewWithTag:2];
+            linkAvailableImageView = (UIImageView *)[cell viewWithTag:3];
         }
     }
     
@@ -478,6 +501,14 @@
         
         [nameLabel sizeToFit];
         [roleLabel sizeToFit];
+        
+        if ([(MDACListCredit *)credit itemAtIndex:index].link) {
+            linkAvailableImageView.hidden = NO;
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        } else {
+            linkAvailableImageView.hidden = YES;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
         
         if (roleLabel.text) {
             nameLabel.frame = CGRectMake(114, floorf((cell.contentView.bounds.size.height-nameLabel.bounds.size.height)/2.-2), nameLabel.bounds.size.width, nameLabel.bounds.size.height);
@@ -492,6 +523,49 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     cell.backgroundColor = [UIColor clearColor];
+}
+
+- (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    MDACCredit *credit;
+    NSUInteger index, count;
+    
+    int i = 0;
+    
+    for (MDACCredit *tempCredit in credits) {
+        if ([tempCredit isMemberOfClass:[MDACListCredit class]]) {
+            count = [(MDACListCredit *)tempCredit count];
+            i += count;
+            
+            if (i > indexPath.row) {
+                credit = tempCredit;
+                index = indexPath.row - (i - count);
+                break;
+            }
+        } else {
+            i += 1;
+            
+            if (i > indexPath.row) {
+                credit = tempCredit;
+                break;
+            }
+        }
+        
+        i += 1;
+        
+        if (i > indexPath.row) {
+            credit = nil;
+            break;
+        }
+    }
+    
+    if ([credit isMemberOfClass:[MDACListCredit class]]) {
+        if ([(MDACListCredit *)credit itemAtIndex:index].link) {
+            [[UIApplication sharedApplication] openURL:[(MDACListCredit *)credit itemAtIndex:index].link];
+        }
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
