@@ -378,7 +378,7 @@
             if (i > indexPath.row) {
                 credit = tempCredit;
                 index = indexPath.row - (i - count);
-                if (index >= count) {
+                if (index == count-1) {
                     if (index == 0) {
                         cellID = singleListCellID;
                     } else {
@@ -416,7 +416,67 @@
     if (!cell) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:cellID] autorelease];
         
-        if ([cellID isEqualToString:topListCellID]) {
+        if (cellID == topListCellID) {
+            UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
+            
+            UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, -1, tableView.bounds.size.width-20, 45)];
+            backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundTop.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
+            backgroundImage.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            [backgroundView addSubview:backgroundImage];
+            [backgroundImage release];
+            
+            cell.backgroundView = backgroundView;
+            [backgroundView release];
+            
+            cell.textLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
+            cell.textLabel.textColor = [UIColor whiteColor];
+            cell.textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
+            cell.textLabel.shadowOffset = CGSizeMake(0, -1);
+            cell.detailTextLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
+            cell.detailTextLabel.textColor = [UIColor whiteColor];
+            cell.detailTextLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
+            cell.detailTextLabel.shadowOffset = CGSizeMake(0, -1);
+        } else if (cellID == middleListCellID) {
+            UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
+            
+            UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, 44)];
+            backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundMiddle.png"] stretchableImageWithLeftCapWidth:1 topCapHeight:10];
+            backgroundImage.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            [backgroundView addSubview:backgroundImage];
+            [backgroundImage release];
+            
+            cell.backgroundView = backgroundView;
+            [backgroundView release];
+            
+            cell.textLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
+            cell.textLabel.textColor = [UIColor whiteColor];
+            cell.textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
+            cell.textLabel.shadowOffset = CGSizeMake(0, -1);
+            cell.detailTextLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
+            cell.detailTextLabel.textColor = [UIColor whiteColor];
+            cell.detailTextLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
+            cell.detailTextLabel.shadowOffset = CGSizeMake(0, -1);
+        } else if (cellID == bottomListCellID) {
+            UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
+            
+            UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, 44)];
+            backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundBottom.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
+            backgroundImage.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            [backgroundView addSubview:backgroundImage];
+            [backgroundImage release];
+            
+            cell.backgroundView = backgroundView;
+            [backgroundView release];
+            
+            cell.textLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
+            cell.textLabel.textColor = [UIColor whiteColor];
+            cell.textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
+            cell.textLabel.shadowOffset = CGSizeMake(0, -1);
+            cell.detailTextLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
+            cell.detailTextLabel.textColor = [UIColor whiteColor];
+            cell.detailTextLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
+            cell.detailTextLabel.shadowOffset = CGSizeMake(0, -1);
+        } else {
             
         }
         // .. setup all of them here
@@ -424,10 +484,14 @@
     
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
         cell.detailTextLabel.text = [(MDACListCredit *)credit itemAtIndex:index].name;
-        cell.textLabel.text = [(MDACListCredit *)credit itemAtIndex:index].role;
+        cell.textLabel.text = [[(MDACListCredit *)credit itemAtIndex:index].role lowercaseString];
     }
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    cell.backgroundColor = [UIColor clearColor];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
