@@ -31,6 +31,17 @@
 
 #import "MDAboutController.h"
 
+#pragma mark Constants
+
+static NSString *MDACIconCellID = @"MDACIconCell";
+static NSString *MDACSpacerCellID = @"MDACSpacerCell";
+static NSString *MDACTopListCellID = @"MDACTopListCell";
+static NSString *MDACMiddleListCellID = @"MDACMiddleListCell";
+static NSString *MDACBottomListCellID = @"MDACBottomListCell";
+static NSString *MDACSingleListCellID = @"MDACSingleListCell";
+static NSString *MDACTextCellID = @"MDACTextCell";
+static NSString *MDACImageCellID = @"MDACImageCell";
+
 #pragma mark - MDACTitleBar
 
 @interface MDACTitleBar : UIView {
@@ -303,6 +314,58 @@
 
 @end
 
+@interface MDACIconCredit : MDACCredit {
+    NSString *appName;
+    NSString *versionString;
+    UIImage *icon;
+}
+
+@property(nonatomic, copy) NSString *appName;
+@property(nonatomic, copy) NSString *versionString;
+@property(nonatomic, retain) UIImage *icon;
+- (id)initWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
++ (id)iconCreditWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
+
+@end
+
+@implementation MDACIconCredit
+
+@synthesize appName, versionString, icon;
+
+- (id)initWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage
+{
+    if ((self = [super initWithType:@"List"])) {
+        self.appName = aName;
+        self.versionString = aVersionString;
+        self.icon = anImage;
+    }
+    return self;
+}
+
+- (id)initWithType:(NSString *)aType
+{
+    return [self initWithAppName:nil versionString:nil icon:nil];
+}
+
++ (id)creditWithType:(NSString *)aType
+{
+    return [self iconCreditWithAppName:nil versionString:nil icon:nil];
+}
+
++ (id)iconCreditWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
+{
+    return [[[self alloc] initWithAppName:aName versionString:aVersionString icon:anImage] autorelease];
+}
+
+- (void)dealloc {
+    [appName release];
+    [versionString release];
+    [icon release];
+    [super dealloc];
+}
+
+@end
+
 #pragma mark - MDAboutController
 
 @implementation MDAboutController
@@ -369,7 +432,7 @@
             icon = [UIImage imageNamed:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFile"]];
         }
         
-        NSLog(@"%@ %@ %@", appName, versionString, icon);
+        [credits addObject:[MDACIconCredit iconCreditWithAppName:appName versionString:versionString icon:icon]];
         
         NSString *path = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"plist"];
         if (path) {
@@ -393,6 +456,10 @@
 
 - (void)dealloc
 {
+    [cachedCellCredits release];
+    [cachedCellHeights release];
+    [cachedCellIDs release];
+    [cachedCellIndices release];
     [credits release];
     [super dealloc];
 }
@@ -407,63 +474,108 @@
 
 #pragma mark - View lifecycle
 
-- (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)generateCachedCells
 {
-    static NSString *iconCellID = @"IconCell";
-    static NSString *spacerCellID = @"SpacerCell";
-    static NSString *topListCellID = @"TopListCell";
-    static NSString *middleListCellID = @"MiddleListCell";
-    static NSString *bottomListCellID = @"BottomListCell";
-    static NSString *singleListCellID = @"SingleListCell";
-    static NSString *textCellID = @"TextCell";
-    static NSString *imageCellID = @"ImageCell";
+    [cachedCellCredits release];
+    [cachedCellHeights release];
+    [cachedCellIDs release];
+    [cachedCellIndices release];
+    
+    cachedCellCredits = [[NSMutableArray alloc] init];
+    cachedCellHeights = [[NSMutableArray alloc] init];
+    cachedCellIDs = [[NSMutableArray alloc] init];
+    cachedCellIndices = [[NSMutableArray alloc] init];
     
     NSString *cellID;
-    MDACCredit *credit;
     NSUInteger index, count;
     
-    int i = 0;
+    int i = 1;
+    int j;
+    
+    [cachedCellCredits addObject:[NSNull null]];
+    [cachedCellHeights addObject:[NSNumber numberWithFloat:25]];
+    [cachedCellIDs addObject:MDACSpacerCellID];
+    [cachedCellIndices addObject:[NSNull null]];
     
     for (MDACCredit *tempCredit in credits) {
         if ([tempCredit isMemberOfClass:[MDACListCredit class]]) {
             count = [(MDACListCredit *)tempCredit count];
+            j = i;
             i += count;
             
-            if (i > indexPath.row) {
-                credit = tempCredit;
-                index = indexPath.row - (i - count);
+            for (; j < i; j++) {
+                index = j - (i - count);
                 if (index == count-1) {
                     if (index == 0) {
-                        cellID = singleListCellID;
+                        cellID = MDACSingleListCellID;
                     } else {
-                        cellID = bottomListCellID;
+                        cellID = MDACBottomListCellID;
                     }
                 } else if (index == 0) {
-                    cellID = topListCellID;
+                    cellID = MDACTopListCellID;
                 } else {
-                    cellID = middleListCellID;
+                    cellID = MDACMiddleListCellID;
                 }
-                break;
+                
+                [cachedCellCredits addObject:tempCredit];
+                [cachedCellHeights addObject:[NSNumber numberWithFloat:44]];
+                [cachedCellIDs addObject:cellID];
+                [cachedCellIndices addObject:[NSNumber numberWithInteger:index]];
             }
+        } else if ([tempCredit isMemberOfClass:[MDACIconCredit class]]) {
+            i += 1;
+            
+            float iconHeight = 57;
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+                iconHeight = 72;
+            
+            iconHeight += 20;
+            
+            [cachedCellCredits addObject:tempCredit];
+            [cachedCellHeights addObject:[NSNumber numberWithFloat:iconHeight]];
+            [cachedCellIDs addObject:MDACIconCellID];
+            [cachedCellIndices addObject:[NSNull null]];
         } else {
             i += 1;
             
-            if (i > indexPath.row) {
-                credit = tempCredit;
-                break;
-            }
+            [cachedCellCredits addObject:tempCredit];
+            [cachedCellHeights addObject:[NSNumber numberWithFloat:25]];
+            [cachedCellIDs addObject:MDACSpacerCellID];
+            [cachedCellIndices addObject:[NSNull null]];
         }
         
         i += 1;
         
-        if (i > indexPath.row) {
-            credit = nil;
-            cellID = spacerCellID;
-            break;
-        }
+        [cachedCellCredits addObject:[NSNull null]];
+        [cachedCellHeights addObject:[NSNumber numberWithFloat:25]];
+        [cachedCellIDs addObject:MDACSpacerCellID];
+        [cachedCellIndices addObject:[NSNull null]];
     }
+}
+
+- (void)generateCachedCellsIfNeeded
+{
+    if (!cachedCellCredits) {
+        [self generateCachedCells];
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *cellID = nil;
+    MDACCredit *credit = nil;
+    NSUInteger index = 0;
     
-    //NSLog(@"%d: %@, %@, %d", indexPath.row, cellID, credit, index);
+    [self generateCachedCellsIfNeeded];
+    
+    if ((NSNull *)[cachedCellIDs objectAtIndex:indexPath.row] != [NSNull null])
+        cellID = [cachedCellIDs objectAtIndex:indexPath.row];
+    
+    if ((NSNull *)[cachedCellCredits objectAtIndex:indexPath.row] != [NSNull null])
+        credit = [cachedCellCredits objectAtIndex:indexPath.row];
+    
+    if ((NSNull *)[cachedCellIndices objectAtIndex:indexPath.row] != [NSNull null])
+        index = [[cachedCellIndices objectAtIndex:indexPath.row] integerValue];
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     
@@ -471,7 +583,7 @@
     UIImageView *linkAvailableImageView;
     
     if (!cell) {
-        if (cellID == topListCellID || cellID == middleListCellID || cellID == bottomListCellID || cellID == singleListCellID) {
+        if (cellID == MDACTopListCellID || cellID == MDACMiddleListCellID || cellID == MDACBottomListCellID || cellID == MDACSingleListCellID) {
             cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
             
             UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
@@ -480,15 +592,15 @@
             UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, 44)];
             UIImageView *selectedBackgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, 44)];
             
-            if (cellID == topListCellID) {
+            if (cellID == MDACTopListCellID) {
                 backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, 45);
                 backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundTop.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
                 selectedBackgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, 45);
                 selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedTop.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
-            } else if (cellID == middleListCellID) {
+            } else if (cellID == MDACMiddleListCellID) {
                 backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundMiddle.png"] stretchableImageWithLeftCapWidth:1 topCapHeight:10];
                 selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedMiddle.png"] stretchableImageWithLeftCapWidth:1 topCapHeight:10];
-            } else if (cellID == bottomListCellID) {
+            } else if (cellID == MDACBottomListCellID) {
                 backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundBottom.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
                 selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedBottom.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
             } else {
@@ -535,17 +647,18 @@
             linkAvailableImageView = [[UIImageView alloc] initWithFrame:CGRectMake(tableView.bounds.size.width-39, 9, 24, 24)];
             linkAvailableImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
             linkAvailableImageView.image = [UIImage imageNamed:@"MDACLinkArrow.png"];
-            roleLabel.tag = 3;
+            linkAvailableImageView.tag = 3;
             [cell.contentView addSubview:linkAvailableImageView];
             [linkAvailableImageView release];
         } else {
             cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
     } else {
-        if (cellID == topListCellID || cellID == middleListCellID || cellID == bottomListCellID || cellID == singleListCellID) {
-            nameLabel = (UILabel *)[cell viewWithTag:1];
-            roleLabel = (UILabel *)[cell viewWithTag:2];
-            linkAvailableImageView = (UIImageView *)[cell viewWithTag:3];
+        if (cellID == MDACTopListCellID || cellID == MDACMiddleListCellID || cellID == MDACBottomListCellID || cellID == MDACSingleListCellID) {
+            nameLabel = (UILabel *)[cell.contentView viewWithTag:1];
+            roleLabel = (UILabel *)[cell.contentView viewWithTag:2];
+            linkAvailableImageView = (UIImageView *)[cell.contentView viewWithTag:3];
         }
     }
     
@@ -583,37 +696,16 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    MDACCredit *credit;
-    NSUInteger index, count;
+    MDACCredit *credit = nil;
+    NSUInteger index = 0;
     
-    int i = 0;
+    [self generateCachedCellsIfNeeded];
     
-    for (MDACCredit *tempCredit in credits) {
-        if ([tempCredit isMemberOfClass:[MDACListCredit class]]) {
-            count = [(MDACListCredit *)tempCredit count];
-            i += count;
-            
-            if (i > indexPath.row) {
-                credit = tempCredit;
-                index = indexPath.row - (i - count);
-                break;
-            }
-        } else {
-            i += 1;
-            
-            if (i > indexPath.row) {
-                credit = tempCredit;
-                break;
-            }
-        }
-        
-        i += 1;
-        
-        if (i > indexPath.row) {
-            credit = nil;
-            break;
-        }
-    }
+    if ((NSNull *)[cachedCellCredits objectAtIndex:indexPath.row] != [NSNull null])
+        credit = [cachedCellCredits objectAtIndex:indexPath.row];
+    
+    if ((NSNull *)[cachedCellIndices objectAtIndex:indexPath.row] != [NSNull null])
+        index = [[cachedCellIndices objectAtIndex:indexPath.row] integerValue];
     
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
         if ([(MDACListCredit *)credit itemAtIndex:index].link) {
@@ -624,59 +716,16 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUInteger count;
-    
-    int i = 0;
-    
-    for (MDACCredit *tempCredit in credits) {
-        if ([tempCredit isMemberOfClass:[MDACListCredit class]]) {
-            count = [(MDACListCredit *)tempCredit count];
-            i += count;
-            
-            if (i > indexPath.row) {
-                return 44;
-            }
-        } else {
-            i += 1;
-            
-            if (i > indexPath.row) {
-                return 44;
-            }
-        }
-        
-        i += 1;
-        
-        if (i > indexPath.row) {
-            return 25;
-        }
-    }
-    
-    return 44;
+    [self generateCachedCellsIfNeeded];
+    return [[cachedCellHeights objectAtIndex:indexPath.row] floatValue];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSUInteger count;
-    
-    int i = 0;
-    
-    for (MDACCredit *tempCredit in credits) {
-        if ([tempCredit isMemberOfClass:[MDACListCredit class]]) {
-            count = [(MDACListCredit *)tempCredit count];
-            i += count;
-        } else {
-            i += 1;
-        }
-        
-        i += 1;
-    }
-    
-    i -= 1;
-    
-    return i;
+    [self generateCachedCellsIfNeeded];
+    return [cachedCellCredits count];
 }
 
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView
 {
     UIView *rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
@@ -703,24 +752,13 @@
     [self dismissModalViewControllerAnimated:YES];
 }
 
-/*
- // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
- - (void)viewDidLoad
- {
- [super viewDidLoad];
- }
- */
-
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    // Return YES for supported orientations
     return YES;
 }
 

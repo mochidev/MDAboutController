@@ -37,7 +37,15 @@
     UITableView *tableView;
     
     NSMutableArray *credits;
+    
+    NSMutableArray *cachedCellCredits;
+    NSMutableArray *cachedCellIDs;
+    NSMutableArray *cachedCellIndices;
+    NSMutableArray *cachedCellHeights;
 }
+
+- (void)generateCachedCells;
+- (void)generateCachedCellsIfNeeded;
 
 - (IBAction)dismiss:(id)sender;
 
