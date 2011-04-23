@@ -710,7 +710,7 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             [cell.contentView addSubview:detailTextLabel];
             [detailTextLabel release];
             
-            linkAvailableImageView = [[UIImageView alloc] initWithFrame:CGRectMake(tableView.bounds.size.width-39, 9, 24, 24)];
+            linkAvailableImageView = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.bounds.size.width-39, 9, 24, 24)];
             linkAvailableImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
             linkAvailableImageView.image = [UIImage imageNamed:@"MDACLinkArrow.png"];
             linkAvailableImageView.tag = 3;
@@ -727,10 +727,10 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 iconView.frame = CGRectMake(0, 0, 72, 72);
-                containerView.frame = CGRectMake(floorf((cell.contentView.bounds.size.width-202)/2.), 0, 202, 92);
+                containerView.frame = CGRectMake(floorf((cell.contentView.bounds.size.width-212)/2.), 0, 212, 92);
             } else {
                 iconView.frame = CGRectMake(0, 0, 57, 57);
-                containerView.frame = CGRectMake(floorf((cell.contentView.bounds.size.width-188)/2.), 0, 188, 77);
+                containerView.frame = CGRectMake(floorf((cell.contentView.bounds.size.width-198)/2.), 0, 198, 77);
             }
             
             iconBackground.center = CGPointMake(10+iconView.bounds.size.width/2., containerView.bounds.size.height/2.+3);
@@ -819,7 +819,7 @@ static NSString *MDACImageCellID = @"MDACImageCell";
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     MDACCredit *credit = nil;
     NSUInteger index = 0;
