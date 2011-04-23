@@ -395,7 +395,7 @@ static NSString *MDACImageCellID = @"MDACImageCell";
 
 - (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL
 {
-    if ((self = [super initWithType:@"List"])) {
+    if ((self = [super initWithType:@"Text"])) {
         self.text = aTitle;
         if (!aFont) {
             aFont = [UIFont boldSystemFontOfSize:12];
@@ -456,6 +456,62 @@ static NSString *MDACImageCellID = @"MDACImageCell";
 
 @end
 
+@interface MDACImageCredit : MDACCredit {
+    UIImage *image;
+}
+
+@property(nonatomic, retain) UIImage *image;
+- (id)initWithImage:(UIImage *)anImage;
++ (id)imageCreditWithImage:(UIImage *)anImage;
+- (id)initWithDictionary:(NSDictionary *)aDict;
++ (id)imageCreditWithDictionary:(NSDictionary *)aDict;
+
+@end
+
+@implementation MDACImageCredit
+
+@synthesize image;
+
+- (id)initWithImage:(UIImage *)anImage
+{
+    if ((self = [super initWithType:@"Image"])) {
+        self.image = anImage;
+    }
+    return self;
+}
+
+- (id)initWithType:(NSString *)aType
+{
+    return [self initWithImage:nil];
+}
+
++ (id)creditWithType:(NSString *)aType
+{
+    return [self imageCreditWithImage:nil];
+}
+
++ (id)imageCreditWithImage:(UIImage *)anImage
+{
+    return [[[self alloc] initWithImage:anImage] autorelease];
+}
+
+- (id)initWithDictionary:(NSDictionary *)aDict
+{
+    return [self initWithImage:[UIImage imageNamed:[aDict objectForKey:@"Image"]]];
+}
+
++ (id)imageCreditWithDictionary:(NSDictionary *)aDict
+{
+    return [[[self alloc] initWithDictionary:aDict] autorelease];
+}
+
+- (void)dealloc {
+    [image release];
+    [super dealloc];
+}
+
+@end
+
 @interface MDACIconCredit : MDACCredit {
     NSString *appName;
     NSString *versionString;
@@ -476,7 +532,7 @@ static NSString *MDACImageCellID = @"MDACImageCell";
 
 - (id)initWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage
 {
-    if ((self = [super initWithType:@"List"])) {
+    if ((self = [super initWithType:@"Icon"])) {
         self.appName = aName;
         self.versionString = aVersionString;
         self.icon = anImage;
@@ -592,14 +648,19 @@ static NSString *MDACImageCellID = @"MDACImageCell";
                             [credits addObject:[MDACListCredit listCreditWithDictionary:creditDict]];
                         } else if ([[creditDict objectForKey:@"Type"] isEqualToString:@"Text"]) {
                             [credits addObject:[MDACTextCredit textCreditWithDictionary:creditDict]];
-                        } else {
-                            // more types here
+                        } if ([[creditDict objectForKey:@"Type"] isEqualToString:@"Image"]) {
+                            [credits addObject:[MDACImageCredit imageCreditWithDictionary:creditDict]];
                         }
                     }
                 }
             }
             [creditsFile release];
         }
+        
+        [credits addObject:[MDACTextCredit textCreditWithText:@"About screen powered by MDAboutViewController, available free on GitHub!"
+                                                         font:[UIFont boldSystemFontOfSize:11]
+                                                    alignment:UITextAlignmentCenter
+                                                      linkURL:[NSURL URLWithString:@"https://github.com/mochidev/MDAboutControllerDemo"]]];
     }
     return self;
 }
@@ -691,17 +752,24 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             CGSize textSize = CGSizeMake(300, 30);
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
-                                                           constrainedToSize:CGSizeMake(300, 600)
+                                                           constrainedToSize:CGSizeMake(450, 600)
                                                                lineBreakMode:UILineBreakModeWordWrap];
             } else {
                 textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
-                                                           constrainedToSize:CGSizeMake(450, 600)
+                                                           constrainedToSize:CGSizeMake(300, 600)
                                                                lineBreakMode:UILineBreakModeWordWrap];
             }
             
             [cachedCellCredits addObject:tempCredit];
             [cachedCellHeights addObject:[NSNumber numberWithFloat:textSize.height]];
             [cachedCellIDs addObject:MDACTextCellID];
+            [cachedCellIndices addObject:[NSNull null]];
+        } else if ([tempCredit isMemberOfClass:[MDACImageCredit class]]) {
+            i += 1;
+            
+            [cachedCellCredits addObject:tempCredit];
+            [cachedCellHeights addObject:[NSNumber numberWithFloat:[(MDACImageCredit *)tempCredit image].size.height]];
+            [cachedCellIDs addObject:MDACImageCellID];
             [cachedCellIndices addObject:[NSNull null]];
         } else {
             i += 1;
@@ -752,6 +820,8 @@ static NSString *MDACImageCellID = @"MDACImageCell";
     
     UIImageView *iconView = nil;
     UIView *containerView = nil;
+    
+    UIImageView *imageView = nil;
     
     if (!cell) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
@@ -881,13 +951,24 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             textLabel.numberOfLines = 0;
             textLabel.backgroundColor = [UIColor clearColor];
             textLabel.opaque = NO;
-            textLabel.textColor = [UIColor whiteColor];
-            textLabel.highlightedTextColor = [UIColor colorWithWhite:0.7 alpha:1];
+            textLabel.textColor = [UIColor colorWithWhite:0.75 alpha:1];
+            textLabel.highlightedTextColor = [UIColor colorWithWhite:0.5 alpha:1];
             textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.8];
             textLabel.shadowOffset = CGSizeMake(0, -1);
             textLabel.tag = 1;
             [cell.contentView addSubview:textLabel];
             [textLabel release];
+        } else if (cellID == MDACImageCellID) {
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, cell.contentView.bounds.size.width, cell.contentView.bounds.size.height)];
+            imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+            imageView.backgroundColor = [UIColor clearColor];
+            imageView.opaque = NO;
+            imageView.contentMode = UIViewContentModeScaleAspectFit;
+            imageView.tag = 6;
+            [cell.contentView addSubview:imageView];
+            [imageView release];
         } else {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
@@ -903,6 +984,8 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             containerView = (UIImageView *)[cell.contentView viewWithTag:5];
         } else if (cellID == MDACTextCellID) {
             textLabel = (UILabel *)[cell.contentView viewWithTag:1];
+        } else if (cellID == MDACImageCellID) {
+            imageView = (UIImageView *)[cell.contentView viewWithTag:6];
         }
     }
     
@@ -935,6 +1018,9 @@ static NSString *MDACImageCellID = @"MDACImageCell";
         textLabel.textAlignment = [(MDACTextCredit *)credit textAlignment];
         textLabel.font = [(MDACTextCredit *)credit font];
         textLabel.text = [(MDACTextCredit *)credit text];
+        textLabel.highlighted = ([(MDACTextCredit *)credit link] != nil);
+    } else if ([credit isMemberOfClass:[MDACImageCredit class]]) {
+        imageView.image = [(MDACImageCredit *)credit image];
     }
     
     return cell;
@@ -965,7 +1051,6 @@ static NSString *MDACImageCellID = @"MDACImageCell";
         }
     } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {
         if ([(MDACTextCredit *)credit link]) {
-            [(UILabel *)[[tableView cellForRowAtIndexPath:indexPath].contentView viewWithTag:1] setHighlighted:NO];
             [[UIApplication sharedApplication] openURL:[(MDACTextCredit *)credit link]];
         }
     }
