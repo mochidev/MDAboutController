@@ -42,6 +42,63 @@ static NSString *MDACSingleListCellID = @"MDACSingleListCell";
 static NSString *MDACTextCellID = @"MDACTextCell";
 static NSString *MDACImageCellID = @"MDACImageCell";
 
+#pragma mark - Utilities
+
+// git://gist.github.com/938107.git
+
+@interface UIImage (DBMaskedImageAdditions)
+
+- (UIImage *)maskedImageWithMask:(UIImage *)maskImage;
+
+@end
+
+@implementation UIImage (DBMaskedImageAdditions)
+
+- (UIImage *)maskedImageWithMask:(UIImage *)maskImage
+{
+    CGImageRef maskImageRef = maskImage.CGImage; 
+    
+    CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskImageRef),
+                                        CGImageGetHeight(maskImageRef),
+                                        CGImageGetBitsPerComponent(maskImageRef),
+                                        CGImageGetBitsPerPixel(maskImageRef),
+                                        CGImageGetBytesPerRow(maskImageRef),
+                                        CGImageGetDataProvider(maskImageRef), NULL, false);
+    
+    CGImageRef sourceImage = self.CGImage;
+    CGImageRef maskedImage;
+    
+    CGImageAlphaInfo alpha = CGImageGetAlphaInfo(sourceImage);
+    
+    if (alpha != kCGImageAlphaFirst && alpha != kCGImageAlphaLast && alpha != kCGImageAlphaPremultipliedFirst && alpha != kCGImageAlphaPremultipliedLast) {
+        size_t width = CGImageGetWidth(sourceImage);
+        size_t height = CGImageGetHeight(sourceImage);
+        
+        CGContextRef offscreenContext = CGBitmapContextCreate(NULL, width, height,
+                                                              8, 0, CGImageGetColorSpace(sourceImage),
+                                                              kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedFirst);
+        
+        CGContextDrawImage(offscreenContext, CGRectMake(0, 0, width, height), sourceImage);
+        
+        CGImageRef imageRefWithAlpha = CGBitmapContextCreateImage(offscreenContext);
+        maskedImage = CGImageCreateWithMask(imageRefWithAlpha, mask);
+        CGImageRelease(imageRefWithAlpha);
+        
+        CGContextRelease(offscreenContext);
+    } else {
+        maskedImage = CGImageCreateWithMask(sourceImage, mask);
+    }
+    
+    UIImage *returnImage = [UIImage imageWithCGImage:maskedImage];
+    
+    CGImageRelease(maskedImage);
+    CGImageRelease(mask);
+    
+    return returnImage;
+}
+
+@end
+
 #pragma mark - MDACTitleBar
 
 @interface MDACTitleBar : UIView {
@@ -432,6 +489,12 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             icon = [UIImage imageNamed:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFile"]];
         }
         
+        if (icon) {
+            UIImage *maskImage = [UIImage imageNamed:@"MDACIconMask.png"];
+            //icon = maskImage;
+            icon = [icon maskedImageWithMask:maskImage];
+        }
+        
         [credits addObject:[MDACIconCredit iconCreditWithAppName:appName versionString:versionString icon:icon]];
         
         NSString *path = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"plist"];
@@ -579,13 +642,16 @@ static NSString *MDACImageCellID = @"MDACImageCell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     
-    UILabel *nameLabel, *roleLabel;
-    UIImageView *linkAvailableImageView;
+    UILabel *textLabel = nil, *detailTextLabel = nil;
+    UIImageView *linkAvailableImageView = nil;
+    
+    UIImageView *iconView = nil;
+    UIView *containerView = nil;
     
     if (!cell) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
+        
         if (cellID == MDACTopListCellID || cellID == MDACMiddleListCellID || cellID == MDACBottomListCellID || cellID == MDACSingleListCellID) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
-            
             UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
             UIView *selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
             
@@ -623,26 +689,26 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             cell.selectedBackgroundView = selectedBackgroundView;
             [selectedBackgroundView release];
             
-            nameLabel = [[UILabel alloc] init];
-            nameLabel.font = [UIFont boldSystemFontOfSize:17];
-            nameLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
-            nameLabel.textColor = [UIColor whiteColor];
-            nameLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
-            nameLabel.shadowOffset = CGSizeMake(0, -1);
-            nameLabel.tag = 1;
-            [cell.contentView addSubview:nameLabel];
-            [nameLabel release];
+            textLabel = [[UILabel alloc] init];
+            textLabel.font = [UIFont boldSystemFontOfSize:17];
+            textLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
+            textLabel.textColor = [UIColor whiteColor];
+            textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
+            textLabel.shadowOffset = CGSizeMake(0, -1);
+            textLabel.tag = 1;
+            [cell.contentView addSubview:textLabel];
+            [textLabel release];
             
-            roleLabel = [[UILabel alloc] init];
-            roleLabel.font = [UIFont boldSystemFontOfSize:15];
-            roleLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
-            roleLabel.textColor = [UIColor whiteColor];
-            roleLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
-            roleLabel.shadowOffset = CGSizeMake(0, -1);
-            roleLabel.textAlignment = UITextAlignmentRight;
-            roleLabel.tag = 2;
-            [cell.contentView addSubview:roleLabel];
-            [roleLabel release];
+            detailTextLabel = [[UILabel alloc] init];
+            detailTextLabel.font = [UIFont boldSystemFontOfSize:15];
+            detailTextLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
+            detailTextLabel.textColor = [UIColor whiteColor];
+            detailTextLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
+            detailTextLabel.shadowOffset = CGSizeMake(0, -1);
+            detailTextLabel.textAlignment = UITextAlignmentRight;
+            detailTextLabel.tag = 2;
+            [cell.contentView addSubview:detailTextLabel];
+            [detailTextLabel release];
             
             linkAvailableImageView = [[UIImageView alloc] initWithFrame:CGRectMake(tableView.bounds.size.width-39, 9, 24, 24)];
             linkAvailableImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
@@ -650,24 +716,79 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             linkAvailableImageView.tag = 3;
             [cell.contentView addSubview:linkAvailableImageView];
             [linkAvailableImageView release];
+        } else if (cellID == MDACIconCellID) {
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            containerView = [[UIView alloc] init];
+            containerView.tag = 5;
+            containerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin;
+            
+            iconView = [[UIImageView alloc] init];
+            UIImageView *iconBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"MDACIconShadow.png"]];
+            
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                iconView.frame = CGRectMake(0, 0, 72, 72);
+                containerView.frame = CGRectMake(floorf((cell.contentView.bounds.size.width-202)/2.), 0, 202, 92);
+            } else {
+                iconView.frame = CGRectMake(0, 0, 57, 57);
+                containerView.frame = CGRectMake(floorf((cell.contentView.bounds.size.width-188)/2.), 0, 188, 77);
+            }
+            
+            iconBackground.center = CGPointMake(10+iconView.bounds.size.width/2., containerView.bounds.size.height/2.+3);
+            iconView.center = CGPointMake(iconBackground.center.x, iconBackground.center.y-3);
+            iconView.tag = 4;
+            
+            [containerView addSubview:iconBackground];
+            [containerView addSubview:iconView];
+            
+            [iconBackground release];
+            [iconView release];
+            
+            textLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/2.-17), 170, 22)];
+            textLabel.font = [UIFont boldSystemFontOfSize:18];
+            textLabel.backgroundColor = [UIColor clearColor];
+            textLabel.opaque = NO;
+            textLabel.textColor = [UIColor whiteColor];
+            textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.8];
+            textLabel.shadowOffset = CGSizeMake(0, -1);
+            textLabel.tag = 1;
+            [containerView addSubview:textLabel];
+            [textLabel release];
+            
+            detailTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/2.+3), 170, 20)];
+            detailTextLabel.font = [UIFont boldSystemFontOfSize:14];
+            detailTextLabel.backgroundColor = [UIColor clearColor];
+            detailTextLabel.opaque = NO;
+            detailTextLabel.textColor = [UIColor whiteColor];
+            detailTextLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.8];
+            detailTextLabel.shadowOffset = CGSizeMake(0, -1);
+            detailTextLabel.tag = 2;
+            [containerView addSubview:detailTextLabel];
+            [detailTextLabel release];
+            
+            [cell.contentView addSubview:containerView];
+            [containerView release];
         } else {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
     } else {
         if (cellID == MDACTopListCellID || cellID == MDACMiddleListCellID || cellID == MDACBottomListCellID || cellID == MDACSingleListCellID) {
-            nameLabel = (UILabel *)[cell.contentView viewWithTag:1];
-            roleLabel = (UILabel *)[cell.contentView viewWithTag:2];
+            textLabel = (UILabel *)[cell.contentView viewWithTag:1];
+            detailTextLabel = (UILabel *)[cell.contentView viewWithTag:2];
             linkAvailableImageView = (UIImageView *)[cell.contentView viewWithTag:3];
+        } else if (cellID == MDACIconCellID) {
+            textLabel = (UILabel *)[cell.contentView viewWithTag:1];
+            detailTextLabel = (UILabel *)[cell.contentView viewWithTag:2];
+            iconView = (UIImageView *)[cell.contentView viewWithTag:4];
+            containerView = (UIImageView *)[cell.contentView viewWithTag:5];
         }
     }
     
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
-        nameLabel.text = [(MDACListCredit *)credit itemAtIndex:index].name;
-        roleLabel.text = [[(MDACListCredit *)credit itemAtIndex:index].role lowercaseString];
+        textLabel.text = [(MDACListCredit *)credit itemAtIndex:index].name;
+        detailTextLabel.text = [[(MDACListCredit *)credit itemAtIndex:index].role lowercaseString];
         
-        [nameLabel sizeToFit];
-        [roleLabel sizeToFit];
+        [textLabel sizeToFit];
+        [detailTextLabel sizeToFit];
         
         if ([(MDACListCredit *)credit itemAtIndex:index].link) {
             linkAvailableImageView.hidden = NO;
@@ -677,12 +798,16 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
         
-        if (roleLabel.text) {
-            nameLabel.frame = CGRectMake(114, floorf((cell.contentView.bounds.size.height-nameLabel.bounds.size.height)/2.-2), nameLabel.bounds.size.width, nameLabel.bounds.size.height);
-            roleLabel.frame = CGRectMake(24, floorf((cell.contentView.bounds.size.height-roleLabel.bounds.size.height)/2.-1), 80, roleLabel.bounds.size.height);
+        if (detailTextLabel.text) {
+            textLabel.frame = CGRectMake(114, floorf((cell.contentView.bounds.size.height-textLabel.bounds.size.height)/2.-2), textLabel.bounds.size.width, textLabel.bounds.size.height);
+            detailTextLabel.frame = CGRectMake(24, floorf((cell.contentView.bounds.size.height-detailTextLabel.bounds.size.height)/2.-1), 80, detailTextLabel.bounds.size.height);
         } else {
-            nameLabel.frame = CGRectMake(24, floorf((cell.contentView.bounds.size.height-nameLabel.bounds.size.height)/2.-2), nameLabel.bounds.size.width, nameLabel.bounds.size.height);
+            textLabel.frame = CGRectMake(24, floorf((cell.contentView.bounds.size.height-textLabel.bounds.size.height)/2.-2), textLabel.bounds.size.width, textLabel.bounds.size.height);
         }
+    } else if ([credit isMemberOfClass:[MDACIconCredit class]]) {
+        textLabel.text = [(MDACIconCredit *)credit appName];
+        detailTextLabel.text = [(MDACIconCredit *)credit versionString];
+        iconView.image = [(MDACIconCredit *)credit icon];
     }
     
     return cell;
