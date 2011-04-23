@@ -371,6 +371,91 @@ static NSString *MDACImageCellID = @"MDACImageCell";
 
 @end
 
+@interface MDACTextCredit : MDACCredit {
+    NSString *text;
+    UIFont *font;
+    UITextAlignment textAlignment;
+    NSURL *link;
+}
+
+@property(nonatomic, copy) NSString *text;
+@property(nonatomic, retain) UIFont *font;
+@property(nonatomic) UITextAlignment textAlignment;
+@property(nonatomic, retain) NSURL *link;
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
+- (id)initWithDictionary:(NSDictionary *)aDict;
++ (id)textCreditWithDictionary:(NSDictionary *)aDict;
+
+@end
+
+@implementation MDACTextCredit
+
+@synthesize text, font, link, textAlignment;
+
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL
+{
+    if ((self = [super initWithType:@"List"])) {
+        self.text = aTitle;
+        if (!aFont) {
+            aFont = [UIFont boldSystemFontOfSize:12];
+        }
+        self.font = aFont;
+        self.textAlignment = textAlign;
+        self.link = anURL;
+    }
+    return self;
+}
+
+- (id)initWithType:(NSString *)aType
+{
+    return [self initWithText:nil font:nil alignment:UITextAlignmentCenter linkURL:nil];
+}
+
++ (id)creditWithType:(NSString *)aType
+{
+    return [self textCreditWithText:nil font:nil alignment:UITextAlignmentCenter linkURL:nil];
+}
+
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL
+{
+    return [[[self alloc] initWithText:aTitle font:aFont alignment:textAlign linkURL:anURL] autorelease];
+}
+
+- (id)initWithDictionary:(NSDictionary *)aDict
+{
+    CGFloat fontSize = 12;
+    if ([aDict objectForKey:@"Size"])
+        fontSize = [[aDict objectForKey:@"Size"] floatValue];
+    
+    UITextAlignment alignment = UITextAlignmentCenter;
+    
+    if ([[aDict objectForKey:@"Alignment"] isEqualToString:@"Left"]) {
+        alignment = UITextAlignmentLeft;
+    } else if ([[aDict objectForKey:@"Alignment"] isEqualToString:@"Right"]) {
+        alignment = UITextAlignmentRight;
+    }
+    
+    return [self initWithText:[aDict objectForKey:@"Text"]
+                         font:[UIFont boldSystemFontOfSize:fontSize]
+                    alignment:alignment
+                      linkURL:[NSURL URLWithString:[aDict objectForKey:@"Link"]]];
+}
+
++ (id)textCreditWithDictionary:(NSDictionary *)aDict
+{
+    return [[[self alloc] initWithDictionary:aDict] autorelease];
+}
+
+- (void)dealloc {
+    [text release];
+    [font release];
+    [link release];
+    [super dealloc];
+}
+
+@end
+
 @interface MDACIconCredit : MDACCredit {
     NSString *appName;
     NSString *versionString;
@@ -505,6 +590,8 @@ static NSString *MDACImageCellID = @"MDACImageCell";
                     if (creditDict) {
                         if ([[creditDict objectForKey:@"Type"] isEqualToString:@"List"]) {
                             [credits addObject:[MDACListCredit listCreditWithDictionary:creditDict]];
+                        } else if ([[creditDict objectForKey:@"Type"] isEqualToString:@"Text"]) {
+                            [credits addObject:[MDACTextCredit textCreditWithDictionary:creditDict]];
                         } else {
                             // more types here
                         }
@@ -597,6 +684,24 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             [cachedCellCredits addObject:tempCredit];
             [cachedCellHeights addObject:[NSNumber numberWithFloat:iconHeight]];
             [cachedCellIDs addObject:MDACIconCellID];
+            [cachedCellIndices addObject:[NSNull null]];
+        } else if ([tempCredit isMemberOfClass:[MDACTextCredit class]]) {
+            i += 1;
+            
+            CGSize textSize = CGSizeMake(300, 30);
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
+                                                           constrainedToSize:CGSizeMake(300, 600)
+                                                               lineBreakMode:UILineBreakModeWordWrap];
+            } else {
+                textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
+                                                           constrainedToSize:CGSizeMake(450, 600)
+                                                               lineBreakMode:UILineBreakModeWordWrap];
+            }
+            
+            [cachedCellCredits addObject:tempCredit];
+            [cachedCellHeights addObject:[NSNumber numberWithFloat:textSize.height]];
+            [cachedCellIDs addObject:MDACTextCellID];
             [cachedCellIndices addObject:[NSNull null]];
         } else {
             i += 1;
@@ -767,6 +872,22 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             
             [cell.contentView addSubview:containerView];
             [containerView release];
+        } else if (cellID == MDACTextCellID) {
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            textLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, cell.contentView.bounds.size.width-20, cell.contentView.bounds.size.height)];
+            textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+            textLabel.lineBreakMode = UILineBreakModeWordWrap;
+            textLabel.numberOfLines = 0;
+            textLabel.backgroundColor = [UIColor clearColor];
+            textLabel.opaque = NO;
+            textLabel.textColor = [UIColor whiteColor];
+            textLabel.highlightedTextColor = [UIColor colorWithWhite:0.7 alpha:1];
+            textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.8];
+            textLabel.shadowOffset = CGSizeMake(0, -1);
+            textLabel.tag = 1;
+            [cell.contentView addSubview:textLabel];
+            [textLabel release];
         } else {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
@@ -780,6 +901,8 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             detailTextLabel = (UILabel *)[cell.contentView viewWithTag:2];
             iconView = (UIImageView *)[cell.contentView viewWithTag:4];
             containerView = (UIImageView *)[cell.contentView viewWithTag:5];
+        } else if (cellID == MDACTextCellID) {
+            textLabel = (UILabel *)[cell.contentView viewWithTag:1];
         }
     }
     
@@ -808,12 +931,16 @@ static NSString *MDACImageCellID = @"MDACImageCell";
         textLabel.text = [(MDACIconCredit *)credit appName];
         detailTextLabel.text = [(MDACIconCredit *)credit versionString];
         iconView.image = [(MDACIconCredit *)credit icon];
+    } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {
+        textLabel.textAlignment = [(MDACTextCredit *)credit textAlignment];
+        textLabel.font = [(MDACTextCredit *)credit font];
+        textLabel.text = [(MDACTextCredit *)credit text];
     }
     
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)aTableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     cell.backgroundColor = [UIColor clearColor];
 }
 
@@ -835,6 +962,11 @@ static NSString *MDACImageCellID = @"MDACImageCell";
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
         if ([(MDACListCredit *)credit itemAtIndex:index].link) {
             [[UIApplication sharedApplication] openURL:[(MDACListCredit *)credit itemAtIndex:index].link];
+        }
+    } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {
+        if ([(MDACTextCredit *)credit link]) {
+            [(UILabel *)[[tableView cellForRowAtIndexPath:indexPath].contentView viewWithTag:1] setHighlighted:NO];
+            [[UIApplication sharedApplication] openURL:[(MDACTextCredit *)credit link]];
         }
     }
 }
