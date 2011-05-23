@@ -32,6 +32,8 @@
 #import "MDAboutController.h"
 #import "UIImage+DBMaskedImageAdditions.h"
 #import "MDACTitleBar.h"
+#import "MDACCredit.h"
+#import "MDACCreditItem.h"
 
 #pragma mark Constants
 
@@ -45,130 +47,6 @@ static NSString *MDACTextCellID = @"MDACTextCell";
 static NSString *MDACImageCellID = @"MDACImageCell";
 
 #pragma mark - MDACCredit Classes
-
-@interface MDACCredit : NSObject {
-    NSString *type;
-}
-
-@property(nonatomic, copy) NSString *type;
-- (id)initWithType:(NSString *)aType;
-+ (id)credit;
-+ (id)creditWithType:(NSString *)aType;
-
-@end
-
-@implementation MDACCredit
-
-@synthesize type;
-
-- (id)initWithType:(NSString *)aType
-{
-    if ((self = [super init])) {
-        self.type = aType;
-    }
-    return self;
-}
-
-- (id)init
-{
-    return [self initWithType:nil];
-}
-
-+ (id)creditWithType:(NSString *)aType
-{
-    return [[[self alloc] initWithType:aType] autorelease];
-}
-
-+ (id)credit
-{
-    return [self creditWithType:nil];
-}
-
-- (void)dealloc {
-    [type release];
-    [super dealloc];
-}
-
-@end
-
-@interface MDACCreditItem : NSObject {
-    NSString *name;
-    NSString *role;
-    NSURL *link;
-}
-
-@property(nonatomic, copy) NSString *name;
-@property(nonatomic, copy) NSString *role;
-@property(nonatomic, retain) NSURL *link;
-- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL;
-- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;
-+ (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL;
-+ (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;
-+ (id)item;
-- (id)initWithDictionary:(NSDictionary *)aDict;
-+ (id)itemWithDictionary:(NSDictionary *)aDict;
-
-@end
-
-@implementation MDACCreditItem
-
-@synthesize name, role, link;
-
-- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL
-{
-    if ((self = [super init])) {
-        self.name = aName;
-        self.role = aRole;
-        self.link = anURL;
-    }
-    return self;
-}
-
-- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink
-{
-    return [self initWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]];
-}
-
-- (id)init
-{
-    return [self initWithName:nil role:nil linkURL:nil];
-}
-
-+ (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL
-{
-    return [[[self alloc] initWithName:aName role:aRole linkURL:anURL] autorelease];
-}
-
-+ (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink
-{
-    return [self itemWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]];
-}
-
-+ (id)item
-{
-    return [self itemWithName:nil role:nil linkURL:nil];
-}
-
-- (id)initWithDictionary:(NSDictionary *)aDict
-{
-    return [self initWithName:[aDict objectForKey:@"Name"]
-                         role:[aDict objectForKey:@"Role"]
-                   linkString:[aDict objectForKey:@"Link"]];
-}
-
-+ (id)itemWithDictionary:(NSDictionary *)aDict
-{
-    return [[[self alloc] initWithDictionary:aDict] autorelease];
-}
-
-- (void)dealloc {
-    [name release];
-    [role release];
-    [link release];
-    [super dealloc];
-}
-
-@end
 
 @interface MDACListCredit : MDACCredit {
     NSString *title;
@@ -1081,8 +959,6 @@ static NSString *MDACImageCellID = @"MDACImageCell";
             tableView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
         }
     }
-    
-    NSLog(@"    %@", self.titleBar.superview);
 }
 
 - (void)viewDidUnload
