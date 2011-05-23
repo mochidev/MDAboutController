@@ -30,6 +30,7 @@
 //
 
 #import "MDAboutController.h"
+#import "UIImage+DBMaskedImageAdditions.h"
 
 #pragma mark Constants
 
@@ -41,63 +42,6 @@ static NSString *MDACBottomListCellID = @"MDACBottomListCell";
 static NSString *MDACSingleListCellID = @"MDACSingleListCell";
 static NSString *MDACTextCellID = @"MDACTextCell";
 static NSString *MDACImageCellID = @"MDACImageCell";
-
-#pragma mark - Utilities
-
-// git://gist.github.com/938107.git
-
-@interface UIImage (DBMaskedImageAdditions)
-
-- (UIImage *)maskedImageWithMask:(UIImage *)maskImage;
-
-@end
-
-@implementation UIImage (DBMaskedImageAdditions)
-
-- (UIImage *)maskedImageWithMask:(UIImage *)maskImage
-{
-    CGImageRef maskImageRef = maskImage.CGImage; 
-    
-    CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskImageRef),
-                                        CGImageGetHeight(maskImageRef),
-                                        CGImageGetBitsPerComponent(maskImageRef),
-                                        CGImageGetBitsPerPixel(maskImageRef),
-                                        CGImageGetBytesPerRow(maskImageRef),
-                                        CGImageGetDataProvider(maskImageRef), NULL, false);
-    
-    CGImageRef sourceImage = self.CGImage;
-    CGImageRef maskedImage;
-    
-    CGImageAlphaInfo alpha = CGImageGetAlphaInfo(sourceImage);
-    
-    if (alpha != kCGImageAlphaFirst && alpha != kCGImageAlphaLast && alpha != kCGImageAlphaPremultipliedFirst && alpha != kCGImageAlphaPremultipliedLast) {
-        size_t width = CGImageGetWidth(sourceImage);
-        size_t height = CGImageGetHeight(sourceImage);
-        
-        CGContextRef offscreenContext = CGBitmapContextCreate(NULL, width, height,
-                                                              8, 0, CGImageGetColorSpace(sourceImage),
-                                                              kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedFirst);
-        
-        CGContextDrawImage(offscreenContext, CGRectMake(0, 0, width, height), sourceImage);
-        
-        CGImageRef imageRefWithAlpha = CGBitmapContextCreateImage(offscreenContext);
-        maskedImage = CGImageCreateWithMask(imageRefWithAlpha, mask);
-        CGImageRelease(imageRefWithAlpha);
-        
-        CGContextRelease(offscreenContext);
-    } else {
-        maskedImage = CGImageCreateWithMask(sourceImage, mask);
-    }
-    
-    UIImage *returnImage = [UIImage imageWithCGImage:maskedImage];
-    
-    CGImageRelease(maskedImage);
-    CGImageRelease(mask);
-    
-    return returnImage;
-}
-
-@end
 
 #pragma mark - MDACTitleBar
 
