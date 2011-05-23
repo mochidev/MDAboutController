@@ -36,129 +36,19 @@
 #import "MDACCreditItem.h"
 #import "MDACListCredit.h"
 #import "MDACTextCredit.h"
+#import "MDACImageCredit.h"
+#import "MDACIconCredit.h"
 
 #pragma mark Constants
 
-static NSString *MDACIconCellID = @"MDACIconCell";
-static NSString *MDACSpacerCellID = @"MDACSpacerCell";
-static NSString *MDACTopListCellID = @"MDACTopListCell";
-static NSString *MDACMiddleListCellID = @"MDACMiddleListCell";
-static NSString *MDACBottomListCellID = @"MDACBottomListCell";
-static NSString *MDACSingleListCellID = @"MDACSingleListCell";
-static NSString *MDACTextCellID = @"MDACTextCell";
-static NSString *MDACImageCellID = @"MDACImageCell";
-
-#pragma mark - MDACCredit Classes
-
-@interface MDACImageCredit : MDACCredit {
-    UIImage *image;
-}
-
-@property(nonatomic, retain) UIImage *image;
-- (id)initWithImage:(UIImage *)anImage;
-+ (id)imageCreditWithImage:(UIImage *)anImage;
-- (id)initWithDictionary:(NSDictionary *)aDict;
-+ (id)imageCreditWithDictionary:(NSDictionary *)aDict;
-
-@end
-
-@implementation MDACImageCredit
-
-@synthesize image;
-
-- (id)initWithImage:(UIImage *)anImage
-{
-    if ((self = [super initWithType:@"Image"])) {
-        self.image = anImage;
-    }
-    return self;
-}
-
-- (id)initWithType:(NSString *)aType
-{
-    return [self initWithImage:nil];
-}
-
-+ (id)creditWithType:(NSString *)aType
-{
-    return [self imageCreditWithImage:nil];
-}
-
-+ (id)imageCreditWithImage:(UIImage *)anImage
-{
-    return [[[self alloc] initWithImage:anImage] autorelease];
-}
-
-- (id)initWithDictionary:(NSDictionary *)aDict
-{
-    return [self initWithImage:[UIImage imageNamed:[aDict objectForKey:@"Image"]]];
-}
-
-+ (id)imageCreditWithDictionary:(NSDictionary *)aDict
-{
-    return [[[self alloc] initWithDictionary:aDict] autorelease];
-}
-
-- (void)dealloc {
-    [image release];
-    [super dealloc];
-}
-
-@end
-
-@interface MDACIconCredit : MDACCredit {
-    NSString *appName;
-    NSString *versionString;
-    UIImage *icon;
-}
-
-@property(nonatomic, copy) NSString *appName;
-@property(nonatomic, copy) NSString *versionString;
-@property(nonatomic, retain) UIImage *icon;
-- (id)initWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
-+ (id)iconCreditWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
-
-@end
-
-@implementation MDACIconCredit
-
-@synthesize appName, versionString, icon;
-
-- (id)initWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage
-{
-    if ((self = [super initWithType:@"Icon"])) {
-        self.appName = aName;
-        self.versionString = aVersionString;
-        self.icon = anImage;
-    }
-    return self;
-}
-
-- (id)initWithType:(NSString *)aType
-{
-    return [self initWithAppName:nil versionString:nil icon:nil];
-}
-
-+ (id)creditWithType:(NSString *)aType
-{
-    return [self iconCreditWithAppName:nil versionString:nil icon:nil];
-}
-
-+ (id)iconCreditWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
-{
-    return [[[self alloc] initWithAppName:aName versionString:aVersionString icon:anImage] autorelease];
-}
-
-- (void)dealloc {
-    [appName release];
-    [versionString release];
-    [icon release];
-    [super dealloc];
-}
-
-@end
-
-#pragma mark - MDAboutController
+static NSString *MDACIconCellID         = @"MDACIconCell";
+static NSString *MDACSpacerCellID       = @"MDACSpacerCell";
+static NSString *MDACTopListCellID      = @"MDACTopListCell";
+static NSString *MDACMiddleListCellID   = @"MDACMiddleListCell";
+static NSString *MDACBottomListCellID   = @"MDACBottomListCell";
+static NSString *MDACSingleListCellID   = @"MDACSingleListCell";
+static NSString *MDACTextCellID         = @"MDACTextCell";
+static NSString *MDACImageCellID        = @"MDACImageCell";
 
 @implementation MDAboutController
 
