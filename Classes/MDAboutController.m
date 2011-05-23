@@ -568,11 +568,14 @@ static NSString *MDACImageCellID = @"MDACImageCell";
 
 @implementation MDAboutController
 
+@synthesize showsTitleBar, titleBar;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     if ((self = [super initWithNibName:nil bundle:nil])) {
         self.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         self.modalPresentationStyle = UIModalPresentationFormSheet;
+        self.navigationItem.title = @"About";
         
         credits = [[NSMutableArray alloc] init];
         
@@ -683,7 +686,7 @@ static NSString *MDACImageCellID = @"MDACImageCell";
     // Release any cached data, images, etc that aren't in use.
 }
 
-#pragma mark - View lifecycle
+#pragma mark View lifecycle
 
 - (void)generateCachedCells
 {
@@ -1083,15 +1086,98 @@ static NSString *MDACImageCellID = @"MDACImageCell";
     [rootView addSubview:tableView];
     [tableView release];
     
-    titleBar = [[MDACTitleBar alloc] initWithController:self];
-    titleBar.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleWidth;
-    [rootView addSubview:titleBar];
-    [titleBar release];
+    MDACTitleBar *aTitleBar = [[MDACTitleBar alloc] initWithController:self];
+    self.titleBar = aTitleBar;
+    [aTitleBar release];
 }
 
 - (void)dismiss:(id)sender
 {
     [self dismissModalViewControllerAnimated:YES];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.showsTitleBar = !self.navigationController;
+}
+
+- (void)setTitleBar:(UIView *)aTitleBar
+{
+    if (aTitleBar != titleBar) {
+        [self.view addSubview:aTitleBar];
+        [titleBar removeFromSuperview];
+        
+        [titleBar release];
+        titleBar = [aTitleBar retain];
+        
+        titleBar.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleWidth;
+        
+        self.showsTitleBar = showsTitleBar;
+    }
+}
+
+- (void)setShowsTitleBar:(BOOL)yn
+{
+    [self setShowsTitleBar:yn animated:NO];
+}
+
+- (void)setShowsTitleBar:(BOOL)yn animated:(BOOL)animated
+{
+    showsTitleBar = yn;
+    
+    if (showsTitleBar) {
+        titleBar.hidden = NO;
+        if (animated) {
+            [UIView animateWithDuration:0.15 delay:0
+                                options:UIViewAnimationOptionBeginFromCurrentState
+                             animations:^(void) {
+                                 titleBar.alpha = 1.;
+                             }
+                             completion:^(BOOL finished) {
+                                 [UIView animateWithDuration:0.25 delay:0
+                                                     options:UIViewAnimationOptionBeginFromCurrentState
+                                                  animations:^(void) {
+                                                      titleBar.frame = CGRectMake(0, 0, self.view.bounds.size.width, titleBar.bounds.size.height);
+                                                      tableView.frame = CGRectMake(0, titleBar.bounds.size.height, self.view.bounds.size.width, self.view.bounds.size.height-titleBar.bounds.size.height);
+                                                  }
+                                                  completion:NULL];
+                             }];
+            
+        } else {
+            titleBar.alpha = 1.;
+            titleBar.frame = CGRectMake(0, 0, self.view.bounds.size.width, titleBar.bounds.size.height);
+            tableView.frame = CGRectMake(0, titleBar.bounds.size.height, self.view.bounds.size.width, self.view.bounds.size.height-titleBar.bounds.size.height);
+        }
+    } else {
+        if (animated) {
+            [UIView animateWithDuration:0.25 delay:0
+                                options:UIViewAnimationOptionBeginFromCurrentState
+                             animations:^(void) {
+                                 titleBar.frame = CGRectMake(0, -titleBar.bounds.size.height, self.view.bounds.size.width, titleBar.bounds.size.height);
+                                 tableView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+                             }
+                             completion:^(BOOL finished) {
+                                 [UIView animateWithDuration:0.15 delay:0
+                                                     options:UIViewAnimationOptionBeginFromCurrentState
+                                                  animations:^(void) {
+                                                      titleBar.alpha = 0;
+                                                  }
+                                                  completion:^(BOOL finished) {
+                                                      titleBar.hidden = YES;
+                                                  }];
+                             }];
+            
+        } else {
+            titleBar.hidden = YES;
+            titleBar.alpha = 0;
+            titleBar.frame = CGRectMake(0, -titleBar.bounds.size.height, self.view.bounds.size.width, titleBar.bounds.size.height);
+            tableView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+        }
+    }
+    
+    NSLog(@"    %@", self.titleBar.superview);
 }
 
 - (void)viewDidUnload

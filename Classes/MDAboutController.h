@@ -30,10 +30,9 @@
 //
 
 #import <UIKit/UIKit.h>
-@class MDACTitleBar;
 
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
-    MDACTitleBar *titleBar;
+    UIView *titleBar;
     UITableView *tableView;
     
     NSMutableArray *credits;
@@ -42,11 +41,18 @@
     NSMutableArray *cachedCellIDs;
     NSMutableArray *cachedCellIndices;
     NSMutableArray *cachedCellHeights;
+    
+    BOOL showsTitleBar;
 }
 
 - (void)generateCachedCells;
 - (void)generateCachedCellsIfNeeded;
 
 - (IBAction)dismiss:(id)sender;
+
+@property (nonatomic, retain) UIView *titleBar;
+
+@property (nonatomic) BOOL showsTitleBar;
+- (void)setShowsTitleBar:(BOOL)yn animated:(BOOL)animated;
 
 @end
