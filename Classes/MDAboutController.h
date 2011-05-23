@@ -43,6 +43,9 @@
     NSMutableArray *cachedCellHeights;
     
     BOOL showsTitleBar;
+    
+    UIColor *backgroundColor;
+    BOOL hasSimpleBackground;
 }
 
 - (void)generateCachedCells;
@@ -54,5 +57,8 @@
 
 @property (nonatomic) BOOL showsTitleBar;
 - (void)setShowsTitleBar:(BOOL)yn animated:(BOOL)animated;
+
+@property (nonatomic, retain) UIColor *backgroundColor;
+@property (nonatomic) BOOL hasSimpleBackground;
 
 @end

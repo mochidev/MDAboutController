@@ -568,7 +568,7 @@ static NSString *MDACImageCellID = @"MDACImageCell";
 
 @implementation MDAboutController
 
-@synthesize showsTitleBar, titleBar;
+@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -576,6 +576,8 @@ static NSString *MDACImageCellID = @"MDACImageCell";
         self.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         self.modalPresentationStyle = UIModalPresentationFormSheet;
         self.navigationItem.title = @"About";
+        
+        self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"MDACBackground.png"]];
         
         credits = [[NSMutableArray alloc] init];
         
@@ -666,6 +668,18 @@ static NSString *MDACImageCellID = @"MDACImageCell";
                                                       linkURL:[NSURL URLWithString:@"https://github.com/mochidev/MDAboutControllerDemo"]]];
     }
     return self;
+}
+
+- (void)setBackgroundColor:(UIColor *)aColor
+{
+    if (backgroundColor != aColor) {
+        [backgroundColor release];
+        backgroundColor = [aColor retain];
+        
+        tableView.backgroundColor = backgroundColor;
+    }
+    
+    self.hasSimpleBackground = !CGColorGetPattern(backgroundColor.CGColor);
 }
 
 - (void)dealloc
@@ -1029,8 +1043,10 @@ static NSString *MDACImageCellID = @"MDACImageCell";
     return cell;
 }
 
-- (void)tableView:(UITableView *)aTableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    cell.backgroundColor = [UIColor clearColor];
+- (void)tableView:(UITableView *)aTableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (!self.hasSimpleBackground)
+        cell.backgroundColor = [UIColor clearColor];
 }
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1079,7 +1095,7 @@ static NSString *MDACImageCellID = @"MDACImageCell";
     
     tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, rootView.bounds.size.width, rootView.bounds.size.height-44) style:UITableViewStylePlain];
     tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
-    tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"MDACBackground.png"]];
+    tableView.backgroundColor = self.backgroundColor;
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -1182,6 +1198,8 @@ static NSString *MDACImageCellID = @"MDACImageCell";
 
 - (void)viewDidUnload
 {
+    self.titleBar = nil;
+    tableView = nil;
     [super viewDidUnload];
 }
 
