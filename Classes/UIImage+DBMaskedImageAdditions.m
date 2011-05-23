@@ -1,6 +1,6 @@
 //
 //  UIImage+DBMaskedImageAdditions.m
-//  MDAboutControllerDemo
+//  MDAboutController
 //
 //  Created by Dimitri Bouniol on 5/23/11.
 //  Copyright 2011 Mochi Development Inc. All rights reserved.

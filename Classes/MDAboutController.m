@@ -31,6 +31,7 @@
 
 #import "MDAboutController.h"
 #import "UIImage+DBMaskedImageAdditions.h"
+#import "MDACTitleBar.h"
 
 #pragma mark Constants
 
@@ -42,62 +43,6 @@ static NSString *MDACBottomListCellID = @"MDACBottomListCell";
 static NSString *MDACSingleListCellID = @"MDACSingleListCell";
 static NSString *MDACTextCellID = @"MDACTextCell";
 static NSString *MDACImageCellID = @"MDACImageCell";
-
-#pragma mark - MDACTitleBar
-
-@interface MDACTitleBar : UIView {
-    UILabel *title;
-    UIButton *doneButton;
-    
-    UIImageView *background;
-}
-
-- (id)initWithController:(MDAboutController *)controller;
-
-@end
-
-@implementation MDACTitleBar
-
-- (id)initWithController:(MDAboutController *)controller
-{
-    if ((self = [super initWithFrame:CGRectMake(0, 0, 320, 44)])) {
-        background = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 59)];
-        background.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        background.image = [UIImage imageNamed:@"MDACTitleBar.png"];
-        background.contentMode = UIViewContentModeScaleToFill;
-        [self addSubview:background];
-        [background release];
-        
-        title = [[UILabel alloc] initWithFrame:self.bounds];
-        title.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        title.backgroundColor = nil;
-        title.opaque = NO;
-        title.textAlignment = UITextAlignmentCenter;
-        title.textColor = [UIColor whiteColor];
-        title.text = @"About";
-        title.font = [UIFont boldSystemFontOfSize:20];
-        title.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
-        title.shadowOffset = CGSizeMake(0, -1);
-        [self addSubview:title];
-        [title release];
-        
-        doneButton = [[UIButton alloc] initWithFrame:CGRectMake(self.bounds.size.width-55, 7, 50, 30)];
-        doneButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-        [doneButton setBackgroundImage:[UIImage imageNamed:@"MDACDoneButton.png"] forState:UIControlStateNormal];
-        [doneButton setBackgroundImage:[UIImage imageNamed:@"MDACDoneButtonPressed.png"] forState:UIControlStateHighlighted];
-        [doneButton setTitle:@"Done" forState:UIControlStateNormal];
-        [doneButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [doneButton setTitleShadowColor:[UIColor colorWithWhite:0 alpha:0.6] forState:UIControlStateNormal];
-        doneButton.titleLabel.font = [UIFont boldSystemFontOfSize:12];
-        doneButton.titleLabel.shadowOffset = CGSizeMake(0, -1);
-        [doneButton addTarget:controller action:@selector(dismiss:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:doneButton];
-        [doneButton release];
-    }
-    return self;
-}
-
-@end
 
 #pragma mark - MDACCredit Classes
 

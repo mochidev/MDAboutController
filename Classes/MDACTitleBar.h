@@ -1,5 +1,5 @@
 //
-//  UIImage+DBMaskedImageAdditions.h
+//  MDACTitleBar.h
 //  MDAboutController
 //
 //  Created by Dimitri Bouniol on 5/23/11.
@@ -28,13 +28,17 @@
 //  Also, it'd be super awesome if you left in the credit line generated
 //  automatically by the code that links back to this page :)
 //
-//  Cloned from git://gist.github.com/938107.git
 
 #import <UIKit/UIKit.h>
+@class MDAboutController;
 
-@interface UIImage (DBMaskedImageAdditions)
+@interface MDACTitleBar : UIView {
+    UILabel *title;
+    UIButton *doneButton;
+    
+    UIImageView *background;
+}
 
-- (UIImage *)maskedImageWithMask:(UIImage *)maskImage;
+- (id)initWithController:(MDAboutController *)controller;
 
 @end
-
