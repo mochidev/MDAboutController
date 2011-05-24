@@ -52,7 +52,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 @implementation MDAboutController
 
-@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground;
+@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, activity, web, linkViewController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -64,6 +64,18 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         
         credits = [[NSMutableArray alloc] init];
         
+        if (!activity){
+            activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            activity.hidesWhenStopped = YES;              
+        }
+
+        
+        if (!linkViewController){
+            linkViewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];   
+            
+            activity.center = linkViewController.view.center;
+            [[linkViewController view]addSubview:activity];
+        }
         NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
         NSString *versionString = nil;
         
@@ -173,6 +185,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     [cachedCellCredits release];
     [cachedCellHeights release];
+    [activity release];
+    [web setDelegate:nil];
+    [web release];
+    [linkViewController release];
     [cachedCellIDs release];
     [cachedCellIndices release];
     [credits release];
@@ -186,6 +202,42 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     // Release any cached data, images, etc that aren't in use.
 }
+
+#pragma mark UIWebViewDelegate
+
+//TODO: Implement refresh/reload activity button in toolbar via delegates
+- (void)webViewDidStartLoad:(UIWebView *)webView{
+    
+    [activity startAnimating];
+                            
+    
+}
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    [activity stopAnimating];
+    activity = nil;
+}
+//TODO: Implement Alert for error, and pop view
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
+    [activity stopAnimating];
+    activity = nil;
+    
+    UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"An error accessing the internet"
+													 message:[error localizedDescription]
+													delegate:nil
+										   cancelButtonTitle:@"OK"
+										   otherButtonTitles:nil] autorelease];
+	[alert show];
+
+}
+
+#pragma mark UI Alert delegate to pop back
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (self.navigationController)
+        [self.navigationController popToViewController:self animated:YES];
+    else
+        [self.modalViewController dismissModalViewControllerAnimated:YES];
+}
+
 
 #pragma mark View lifecycle
 
@@ -558,16 +610,17 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 if (!self.navigationController){
                     [[UIApplication sharedApplication] openURL:[(MDACListCredit *)credit itemAtIndex:index].link];
                 }else{
-                    UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
-                    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, viewController.view.frame.size.width, viewController.view.frame.size.height)];
-                    //webView.delegate = self; TOFIX:// when we work with delegates for udpated version
-                    
                     NSURL* url = [(MDACListCredit *)credit itemAtIndex:index].link;
-                    [webView loadRequest:[NSURLRequest requestWithURL:url]];
-                    [viewController.view addSubview:webView];
-                    [webView release];
-                    [[self navigationController] pushViewController:viewController animated:YES];
-                    [viewController release];                
+                    web = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, linkViewController.view.frame.size.width, linkViewController.view.frame.size.height)];
+                    
+                    [web setDelegate:self];
+                    [web loadRequest:[NSURLRequest requestWithURL:url]];
+                    [linkViewController retain];
+                    [linkViewController release];
+                    [linkViewController.view addSubview:web];
+                    [web setDelegate:nil];
+                    [web release];
+                    [[self navigationController] pushViewController:linkViewController animated:YES];               
                 }
             }
         }
@@ -576,16 +629,17 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             if (!self.navigationController){
                 [[UIApplication sharedApplication] openURL:[(MDACTextCredit *)credit link]];
             }else{
-                UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
-                UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, viewController.view.frame.size.width, viewController.view.frame.size.height)];
-                //webView.delegate = self; TOFIX:// when we work with delegates for udpated version
-                
                 NSURL* url =[(MDACTextCredit *)credit link];
-                [webView loadRequest:[NSURLRequest requestWithURL:url]];
-                [viewController.view addSubview:webView];
-                [webView release];
-                [[self navigationController] pushViewController:viewController animated:YES];
-                [viewController release];                
+                web = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, linkViewController.view.frame.size.width, linkViewController.view.frame.size.height)];
+                [web setDelegate:self];
+                [web loadRequest:[NSURLRequest requestWithURL:url]];
+                [linkViewController retain];
+                [linkViewController release];
+                [linkViewController.view addSubview:web];
+                [web setDelegate:nil];
+                [web release];
+                
+                [[self navigationController] pushViewController:linkViewController animated:YES];           
             }
 
         }

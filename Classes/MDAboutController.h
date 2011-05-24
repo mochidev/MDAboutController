@@ -31,9 +31,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
+@interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate, UIAlertViewDelegate> {
     UIView *titleBar;
     UITableView *tableView;
+    UIActivityIndicatorView* activity;
+    UIWebView* web;
+    UIViewController* linkViewController;
     
     NSMutableArray *credits;
     
@@ -60,5 +63,8 @@
 
 @property (nonatomic, retain) UIColor *backgroundColor;
 @property (nonatomic) BOOL hasSimpleBackground;
+@property (nonatomic, retain) UIActivityIndicatorView* activity;
+@property (nonatomic, retain) UIWebView* web;
+@property (nonatomic, retain) UIViewController* linkViewController;
 
 @end
