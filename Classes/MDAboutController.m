@@ -148,11 +148,14 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             }
             [creditsFile release];
         }
+            
+        //TOFIX: Do we need this? People might not want to have this in their app, but we could find another way of adding credits? Perhaps
+        // as a Credit item in the section table?
         
-        [credits addObject:[MDACTextCredit textCreditWithText:@"About screen powered by MDAboutViewController, available free on GitHub!"
-                                                         font:[UIFont boldSystemFontOfSize:11]
-                                                    alignment:UITextAlignmentCenter
-                                                      linkURL:[NSURL URLWithString:@"https://github.com/mochidev/MDAboutControllerDemo"]]];
+//        [credits addObject:[MDACTextCredit textCreditWithText:@"About screen powered by MDAboutViewController, available free on GitHub!"
+//                                                         font:[UIFont boldSystemFontOfSize:11]
+//                                                    alignment:UITextAlignmentCenter
+//                                                      linkURL:[NSURL URLWithString:@"https://github.com/mochidev/MDAboutControllerDemo"]]];
     }
     return self;
 }
