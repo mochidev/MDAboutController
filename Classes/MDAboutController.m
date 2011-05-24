@@ -59,7 +59,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     if ((self = [super initWithNibName:nil bundle:nil])) {
         self.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         self.modalPresentationStyle = UIModalPresentationFormSheet;
-        self.navigationItem.title = @"About";
         
         self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"MDACBackground.png"]];
         
@@ -67,6 +66,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         
         NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
         NSString *versionString = nil;
+        
+        // Former makes about string too long
+        //self.navigationItem.title = [NSString stringWithFormat:@"About %@", appName];
+        self.navigationItem.title = @"About";
         
         if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] && [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]) {
             versionString = [NSString stringWithFormat:@"Version %@ (%@)",
@@ -587,6 +590,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     [tableView release];
     
     MDACTitleBar *aTitleBar = [[MDACTitleBar alloc] initWithController:self];
+    aTitleBar.title = self.navigationItem.title;
     self.titleBar = aTitleBar;
     [aTitleBar release];
 }
@@ -601,6 +605,9 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     [super viewWillAppear:animated];
     
     self.showsTitleBar = !self.navigationController;
+    if ([titleBar isMemberOfClass:[MDACTitleBar class]]) {
+        [(MDACTitleBar *)titleBar setButtonHidden:(self.parentViewController.modalViewController != self)];
+    }
 }
 
 - (void)setTitleBar:(UIView *)aTitleBar

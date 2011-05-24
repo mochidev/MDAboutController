@@ -37,7 +37,12 @@
     UIButton *doneButton;
     
     UIImageView *background;
+    BOOL buttonHidden;
 }
+
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *buttonTitle;
+@property (nonatomic, getter = isButtonHidden) BOOL buttonHidden;
 
 - (id)initWithController:(MDAboutController *)controller;
 

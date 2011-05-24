@@ -73,4 +73,40 @@
     return self;
 }
 
+- (void)setTitle:(NSString *)aTitle
+{
+    title.text = aTitle;
+}
+
+- (NSString *)title
+{
+    return title.text;
+}
+
+- (void)setButtonTitle:(NSString *)aTitle
+{
+    doneButton.titleLabel.text = aTitle;
+}
+
+- (NSString *)buttonTitle
+{
+    return doneButton.titleLabel.text;
+}
+
+- (void)setButtonHidden:(BOOL)yn
+{
+    buttonHidden = yn;
+    
+    if (buttonHidden) {
+        doneButton.frame = CGRectMake(self.bounds.size.width+5, 7, 50, 30);
+    } else {
+        doneButton.frame = CGRectMake(self.bounds.size.width-55, 7, 50, 30);
+    }
+}
+
+- (BOOL)isButtonHidden
+{
+    return buttonHidden;
+}
+
 @end
