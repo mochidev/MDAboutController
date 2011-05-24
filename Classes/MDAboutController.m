@@ -553,11 +553,41 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
         if ([(MDACListCredit *)credit itemAtIndex:index].link) {
-            [[UIApplication sharedApplication] openURL:[(MDACListCredit *)credit itemAtIndex:index].link];
+            if ([(MDACListCredit *)credit itemAtIndex:index].link) {
+                
+                if (!self.navigationController){
+                    [[UIApplication sharedApplication] openURL:[(MDACListCredit *)credit itemAtIndex:index].link];
+                }else{
+                    UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+                    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, viewController.view.frame.size.width, viewController.view.frame.size.height)];
+                    //webView.delegate = self; TOFIX:// when we work with delegates for udpated version
+                    
+                    NSURL* url = [(MDACListCredit *)credit itemAtIndex:index].link;
+                    [webView loadRequest:[NSURLRequest requestWithURL:url]];
+                    [viewController.view addSubview:webView];
+                    [webView release];
+                    [[self navigationController] pushViewController:viewController animated:YES];
+                    [viewController release];                
+                }
+            }
         }
     } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {
         if ([(MDACTextCredit *)credit link]) {
-            [[UIApplication sharedApplication] openURL:[(MDACTextCredit *)credit link]];
+            if (!self.navigationController){
+                [[UIApplication sharedApplication] openURL:[(MDACTextCredit *)credit link]];
+            }else{
+                UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+                UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, viewController.view.frame.size.width, viewController.view.frame.size.height)];
+                //webView.delegate = self; TOFIX:// when we work with delegates for udpated version
+                
+                NSURL* url =[(MDACTextCredit *)credit link];
+                [webView loadRequest:[NSURLRequest requestWithURL:url]];
+                [viewController.view addSubview:webView];
+                [webView release];
+                [[self navigationController] pushViewController:viewController animated:YES];
+                [viewController release];                
+            }
+
         }
     }
 }
