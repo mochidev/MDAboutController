@@ -148,11 +148,14 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             }
             [creditsFile release];
         }
+            
+        //TOFIX: Do we need this? People might not want to have this in their app, but we could find another way of adding credits? Perhaps
+        // as a Credit item in the section table?
         
-        [credits addObject:[MDACTextCredit textCreditWithText:@"About screen powered by MDAboutViewController, available free on GitHub!"
-                                                         font:[UIFont boldSystemFontOfSize:11]
-                                                    alignment:UITextAlignmentCenter
-                                                      linkURL:[NSURL URLWithString:@"https://github.com/mochidev/MDAboutControllerDemo"]]];
+//        [credits addObject:[MDACTextCredit textCreditWithText:@"About screen powered by MDAboutViewController, available free on GitHub!"
+//                                                         font:[UIFont boldSystemFontOfSize:11]
+//                                                    alignment:UITextAlignmentCenter
+//                                                      linkURL:[NSURL URLWithString:@"https://github.com/mochidev/MDAboutControllerDemo"]]];
     }
     return self;
 }
@@ -186,6 +189,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     // Release any cached data, images, etc that aren't in use.
 }
+
+
 
 #pragma mark View lifecycle
 
@@ -553,11 +558,31 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
         if ([(MDACListCredit *)credit itemAtIndex:index].link) {
-            [[UIApplication sharedApplication] openURL:[(MDACListCredit *)credit itemAtIndex:index].link];
+            if ([(MDACListCredit *)credit itemAtIndex:index].link) {
+                
+                if (!self.navigationController){
+                    [[UIApplication sharedApplication] openURL:[(MDACListCredit *)credit itemAtIndex:index].link];
+                }else{
+                    
+                    NSURL* url = [(MDACListCredit *)credit itemAtIndex:index].link;
+                    MDWebViewController* linkViewController = [[MDWebViewController alloc] initWithUrl:url];
+                    [[self navigationController] pushViewController:linkViewController animated:YES];     
+                    [linkViewController release];
+                        
+                }
+            }
         }
     } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {
         if ([(MDACTextCredit *)credit link]) {
-            [[UIApplication sharedApplication] openURL:[(MDACTextCredit *)credit link]];
+            if (!self.navigationController){
+                [[UIApplication sharedApplication] openURL:[(MDACTextCredit *)credit link]];
+            }else{
+                NSURL* url =[(MDACTextCredit *)credit link];
+                MDWebViewController* linkViewController = [[MDWebViewController alloc] initWithUrl:url];
+                [[self navigationController] pushViewController:linkViewController animated:YES];           
+                [linkViewController release];
+            }
+            
         }
     }
 }
@@ -698,3 +723,4 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 }
 
 @end
+

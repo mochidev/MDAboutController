@@ -2,8 +2,7 @@
 //  MDAboutController.h
 //  MDAboutController
 //
-//  Created by Dimitri Bouniol on 4/18/11.
-//  Forked by Doron Katz 5/23/11.
+//  Created by Doron Katz 5/23/11.
 //  Copyright 2011 Mochi Development Inc. All rights reserved.
 //
 //  Copyright (c) 2010 Dimitri Bouniol, Mochi Development, Inc.
@@ -31,36 +30,20 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MDWebViewController.h"
 
-@interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
-    UIView *titleBar;
-    UITableView *tableView;
-    
-    NSMutableArray *credits;
-    
-    NSMutableArray *cachedCellCredits;
-    NSMutableArray *cachedCellIDs;
-    NSMutableArray *cachedCellIndices;
-    NSMutableArray *cachedCellHeights;
-    
-    BOOL showsTitleBar;
-    
-    UIColor *backgroundColor;
-    BOOL hasSimpleBackground;
+
+@interface MDWebViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate> {
+    NSURL*  webURL;
+    UIActivityIndicatorView* activity;
+    UIWebView* webV;
+    UIAlertView* alert;
 }
 
-- (void)generateCachedCells;
-- (void)generateCachedCellsIfNeeded;
+- (id)initWithUrl:(NSURL*)url;
 
-- (IBAction)dismiss:(id)sender;
-
-@property (nonatomic, retain) UIView *titleBar;
-
-@property (nonatomic) BOOL showsTitleBar;
-- (void)setShowsTitleBar:(BOOL)yn animated:(BOOL)animated;
-
-@property (nonatomic, retain) UIColor *backgroundColor;
-@property (nonatomic) BOOL hasSimpleBackground;
+@property (nonatomic, retain) NSURL*  webURL;
+@property (nonatomic, retain) UIActivityIndicatorView* activity;
+@property (nonatomic, retain) UIWebView* webV;
+@property (nonatomic, retain) UIAlertView* alert;
 
 @end
