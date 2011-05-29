@@ -39,7 +39,7 @@
     UIAlertView* alert;
 }
 
-- (id)initWithUrl:(NSURL*)url;
+- (id)initWithURL:(NSURL*)url;
 
 @property (nonatomic, retain) NSURL*  webURL;
 @property (nonatomic, retain) UIActivityIndicatorView* activity;

@@ -36,7 +36,7 @@
 
 @synthesize webURL, activity, webV, alert;
 
-- (id)initWithUrl:(NSURL*)url
+- (id)initWithURL:(NSURL*)url
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
