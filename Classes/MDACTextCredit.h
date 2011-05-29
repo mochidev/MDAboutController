@@ -43,9 +43,12 @@
 @property(nonatomic, retain) UIFont *font;
 @property(nonatomic) UITextAlignment textAlignment;
 @property(nonatomic, retain) NSURL *link;
+
 - (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController;
 + (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
-- (id)initWithDictionary:(NSDictionary *)aDict;
-+ (id)textCreditWithDictionary:(NSDictionary *)aDict;
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController;
+- (id)initWithDictionary:(NSDictionary *)aDict; // internal
++ (id)textCreditWithDictionary:(NSDictionary *)aDict; // internal
 
 @end

@@ -33,7 +33,7 @@
 
 @implementation MDACCredit
 
-@synthesize type;
+@synthesize type, viewController;
 
 - (id)initWithType:(NSString *)aType
 {
@@ -58,7 +58,9 @@
     return [self creditWithType:nil];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
+    [viewController release];
     [type release];
     [super dealloc];
 }

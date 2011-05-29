@@ -33,7 +33,7 @@
 
 @implementation MDACCreditItem
 
-@synthesize name, role, link;
+@synthesize name, role, link, viewController;
 
 - (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL
 {
@@ -50,6 +50,14 @@
     return [self initWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]];
 }
 
+- (id)initWithName:(NSString *)aName role:(NSString *)aRole viewController:(UIViewController *)aViewController
+{
+    if ((self = [self initWithName:aName role:aRole linkURL:nil])) {
+        self.viewController = aViewController;
+    }
+    return self;
+}
+
 - (id)init
 {
     return [self initWithName:nil role:nil linkURL:nil];
@@ -62,7 +70,12 @@
 
 + (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink
 {
-    return [self itemWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]];
+    return [[[self alloc] initWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]] autorelease];
+}
+
++ (id)itemWithName:(NSString *)aName role:(NSString *)aRole viewController:(UIViewController *)aViewController
+{
+    return [[[self alloc] initWithName:aName role:aRole viewController:aViewController] autorelease];
 }
 
 + (id)item
@@ -82,7 +95,9 @@
     return [[[self alloc] initWithDictionary:aDict] autorelease];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
+    [viewController release];
     [name release];
     [role release];
     [link release];

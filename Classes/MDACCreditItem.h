@@ -35,17 +35,22 @@
     NSString *name;
     NSString *role;
     NSURL *link;
+    UIViewController *viewController;
 }
 
 @property(nonatomic, copy) NSString *name;
 @property(nonatomic, copy) NSString *role;
 @property(nonatomic, retain) NSURL *link;
-- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL;
+@property(nonatomic, retain) UIViewController *viewController;
+
+- (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL; // designated initializer
 - (id)initWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;
+- (id)initWithName:(NSString *)aName role:(NSString *)aRole viewController:(UIViewController *)aViewController;
 + (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL;
 + (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;
++ (id)itemWithName:(NSString *)aName role:(NSString *)aRole viewController:(UIViewController *)aViewController;
 + (id)item;
-- (id)initWithDictionary:(NSDictionary *)aDict;
-+ (id)itemWithDictionary:(NSDictionary *)aDict;
+- (id)initWithDictionary:(NSDictionary *)aDict; // internal
++ (id)itemWithDictionary:(NSDictionary *)aDict; // internal
 
 @end

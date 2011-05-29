@@ -49,6 +49,14 @@
     return self;
 }
 
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController
+{
+    if ((self = [self initWithText:aTitle font:aFont alignment:textAlign linkURL:nil])) {
+        self.viewController = aViewController;
+    }
+    return self;
+}
+
 - (id)initWithType:(NSString *)aType
 {
     return [self initWithText:nil font:nil alignment:UITextAlignmentCenter linkURL:nil];
@@ -62,6 +70,11 @@
 + (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL
 {
     return [[[self alloc] initWithText:aTitle font:aFont alignment:textAlign linkURL:anURL] autorelease];
+}
+
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController
+{
+    return [[[self alloc] initWithText:aTitle font:aFont alignment:textAlign viewController:aViewController] autorelease];
 }
 
 - (id)initWithDictionary:(NSDictionary *)aDict
@@ -89,7 +102,8 @@
     return [[[self alloc] initWithDictionary:aDict] autorelease];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [text release];
     [font release];
     [link release];

@@ -33,9 +33,12 @@
 
 @interface MDACCredit : NSObject {
     NSString *type;
+    
+    UIViewController *viewController;
 }
 
 @property(nonatomic, copy) NSString *type;
+@property(nonatomic, retain) UIViewController *viewController;
 - (id)initWithType:(NSString *)aType;
 + (id)credit;
 + (id)creditWithType:(NSString *)aType;
