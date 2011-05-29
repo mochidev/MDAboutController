@@ -1,5 +1,5 @@
 //
-//  MDAboutController.h
+//  MDACWebViewController.h
 //  MDAboutController
 //
 //  Created by Doron Katz 5/23/11.
@@ -32,7 +32,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface MDWebViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate> {
+@interface MDACWebViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate> {
     NSURL*  webURL;
     UIActivityIndicatorView* activity;
     UIWebView* webV;

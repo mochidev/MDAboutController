@@ -1,5 +1,5 @@
 //
-//  MDWebViewController.m
+//  MDACWebViewController.m
 //  MDAboutController
 //
 //  Created by Doron Katz 5/23/11.
@@ -29,10 +29,10 @@
 //  automatically by the code that links back to this page :)
 //
 
-#import "MDWebViewController.h"
+#import "MDACWebViewController.h"
 
 
-@implementation MDWebViewController
+@implementation MDACWebViewController
 
 @synthesize webURL, activity, webV, alert;
 

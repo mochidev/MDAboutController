@@ -38,6 +38,7 @@
 #import "MDACTextCredit.h"
 #import "MDACImageCredit.h"
 #import "MDACIconCredit.h"
+#import "MDACWebViewController.h"
 
 #pragma mark Constants
 
@@ -52,7 +53,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 @implementation MDAboutController
 
-@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground;
+@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, credits;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -71,14 +72,17 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         //self.navigationItem.title = [NSString stringWithFormat:@"About %@", appName];
         self.navigationItem.title = @"About";
         
-        if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] && [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]) {
+        NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+        NSString *bundleVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+        
+        if (bundleShortVersionString && bundleVersionString) {
             versionString = [NSString stringWithFormat:@"Version %@ (%@)",
-                             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"],
-                             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
-        } else if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]) {
-            versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-        } else if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]) {
-            versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+                             bundleShortVersionString,
+                             bundleVersionString];
+        } else if (bundleShortVersionString) {
+            versionString = [NSString stringWithFormat:@"Version %@", bundleShortVersionString];
+        } else if (bundleVersionString) {
+            versionString = [NSString stringWithFormat:@"Version %@", bundleVersionString];
         }
 		
         UIImage *icon = nil;
@@ -124,7 +128,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         
         if (icon) {
             UIImage *maskImage = [UIImage imageNamed:@"MDACIconMask.png"];
-            //icon = maskImage;
             icon = [icon maskedImageWithMask:maskImage];
         }
         
@@ -149,8 +152,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             [creditsFile release];
         }
             
-        //TOFIX: Do we need this? People might not want to have this in their app, but we could find another way of adding credits? Perhaps
-        // as a Credit item in the section table?
+        // To remove (:sadface:) the following credit, call [aboutController removeLastCredit]; after initializing your controller.
         
         [credits addObject:[MDACTextCredit textCreditWithText:@"About screen powered by MDAboutViewController, available free on GitHub!"
                                                          font:[UIFont boldSystemFontOfSize:11]
@@ -192,7 +194,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 
 
-#pragma mark View lifecycle
+#pragma mark - View lifecycle
 
 - (void)generateCachedCells
 {
@@ -564,7 +566,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 } else {
                     NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
                     
-                    MDWebViewController *linkViewController = [[MDWebViewController alloc] initWithURL:url];
+                    MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
                     [[self navigationController] pushViewController:linkViewController animated:YES];     
                     [linkViewController release];
                 }
@@ -577,7 +579,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             } else {
                 NSURL *url =[(MDACTextCredit *)credit link];
                 
-                MDWebViewController *linkViewController = [[MDWebViewController alloc] initWithURL:url];
+                MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
                 [[self navigationController] pushViewController:linkViewController animated:YES];           
                 [linkViewController release];
             }
@@ -719,6 +721,73 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return YES;
+}
+
+#pragma mark - Manipulating Credits
+
+- (void)addCredit:(MDACCredit *)aCredit
+{
+    [credits addObject:aCredit];
+    
+    [cachedCellCredits release];
+    cachedCellCredits = nil;
+    
+    [tableView reloadData];
+}
+
+- (void)insertCredit:(MDACCredit *)aCredit atIndex:(NSUInteger)index
+{
+    [credits insertObject:aCredit atIndex:index];
+    
+    [cachedCellCredits release];
+    cachedCellCredits = nil;
+    
+    [tableView reloadData];
+}
+
+- (void)replaceCreditAtIndex:(NSUInteger)index withCredit:(MDACCredit *)aCredit
+{
+    [credits replaceObjectAtIndex:index withObject:aCredit];
+    
+    [cachedCellCredits release];
+    cachedCellCredits = nil;
+    
+    [tableView reloadData];
+}
+
+- (void)removeLastCredit
+{
+    [credits removeLastObject];
+    
+    [cachedCellCredits release];
+    cachedCellCredits = nil;
+    
+    [tableView reloadData];
+}
+
+- (void)removeCredit:(MDACCredit *)aCredit
+{
+    [credits removeObject:aCredit];
+    
+    [cachedCellCredits release];
+    cachedCellCredits = nil;
+    
+    [tableView reloadData];
+}
+
+- (void)removeCreditAtIndex:(NSUInteger)index
+{
+    [credits removeObjectAtIndex:index];
+    
+    [cachedCellCredits release];
+    cachedCellCredits = nil;
+    
+    [tableView reloadData];
+}
+
+- (NSUInteger)creditCount
+{
+    return [credits count];
 }
 
 @end

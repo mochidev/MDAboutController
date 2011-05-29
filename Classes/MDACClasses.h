@@ -38,3 +38,4 @@
 #import "MDACTextCredit.h"
 #import "MDACImageCredit.h"
 #import "MDACIconCredit.h"
+#import "MDACWebViewController.h"

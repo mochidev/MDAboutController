@@ -31,7 +31,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MDWebViewController.h"
+@class MDACCredit;
 
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
     UIView *titleBar;
@@ -50,17 +50,27 @@
     BOOL hasSimpleBackground;
 }
 
-- (void)generateCachedCells;
-- (void)generateCachedCellsIfNeeded;
+- (void)generateCachedCells; // internal
+- (void)generateCachedCellsIfNeeded; // internal
 
-- (IBAction)dismiss:(id)sender;
+- (IBAction)dismiss:(id)sender; // hide if modal
 
 @property (nonatomic, retain) UIView *titleBar;
 
-@property (nonatomic) BOOL showsTitleBar;
+@property (nonatomic) BOOL showsTitleBar; // set to NO automatically when in navcontroller. 
 - (void)setShowsTitleBar:(BOOL)yn animated:(BOOL)animated;
 
 @property (nonatomic, retain) UIColor *backgroundColor;
-@property (nonatomic) BOOL hasSimpleBackground;
+@property (nonatomic) BOOL hasSimpleBackground; // set automatically to YES for non patterend background. Set to YES for better performance, at the cost of a patterned background looking weird.
+
+@property (nonatomic, readonly) NSArray *credits; // for fast enumeration
+@property (nonatomic, readonly) NSUInteger creditCount;
+
+- (void)addCredit:(MDACCredit *)aCredit;
+- (void)insertCredit:(MDACCredit *)aCredit atIndex:(NSUInteger)index;
+- (void)replaceCreditAtIndex:(NSUInteger)index withCredit:(MDACCredit *)aCredit;
+- (void)removeLastCredit;
+- (void)removeCredit:(MDACCredit *)aCredit;
+- (void)removeCreditAtIndex:(NSUInteger)index;
 
 @end
