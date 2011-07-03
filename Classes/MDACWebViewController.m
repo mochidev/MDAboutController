@@ -38,24 +38,30 @@
 
 - (id)initWithURL:(NSURL*)url
 {
-    self = [super initWithNibName:nil bundle:nil];
-    if (self) {
-        self.webURL = url;
-        webV = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-        webV.delegate = self;
-
-        activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        
-        [webV loadRequest:[NSURLRequest requestWithURL:webURL]];
-        [[self view] addSubview:webV];
-        
-        UIBarButtonItem* loadButton = [[UIBarButtonItem alloc] initWithCustomView:activity];
-        self.navigationItem.rightBarButtonItem = loadButton;
-        [loadButton release];
+     if ((self = [super init])) {
+         self.webURL = url;
     }
     return self;
 }
 
+
+-(void)viewDidLoad{
+    [super viewDidLoad];
+    
+    webV = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    webV.delegate = self;
+    
+    activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    
+    [webV loadRequest:[NSURLRequest requestWithURL:webURL]];
+    [[self view] addSubview:webV];
+    
+    UIBarButtonItem* loadButton = [[UIBarButtonItem alloc] initWithCustomView:activity];
+    self.navigationItem.rightBarButtonItem = loadButton;
+    [loadButton release];
+
+    
+}
 
 
 #pragma mark UIWebViewDelegate
@@ -102,13 +108,12 @@
 - (void)dealloc
 {
     [webURL release];
-    alert = nil;
+    alert.delegate = nil;
     [alert release];
     activity = nil;
-    webV = nil;
+    [activity release];
     webV.delegate = nil;
     [webV release];
-    [activity release];
     [super dealloc];
 }
 
@@ -125,13 +130,9 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    webV = nil;
     webV.delegate = nil;
     activity = nil;
     alert.delegate = nil;
-    alert = nil;
-    webURL = nil;
 }
 
 
