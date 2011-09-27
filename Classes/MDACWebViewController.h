@@ -31,19 +31,18 @@
 
 #import <UIKit/UIKit.h>
 
-
 @interface MDACWebViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate> {
-    NSURL*  webURL;
-    UIActivityIndicatorView* activity;
-    UIWebView* webV;
-    UIAlertView* alert;
+    NSURL *webURL;
+    UIActivityIndicatorView *activity;
+    UIWebView *webView;
+    UIAlertView *alert;
 }
 
 - (id)initWithURL:(NSURL*)url;
 
-@property (nonatomic, retain) NSURL*  webURL;
-@property (nonatomic, retain) UIActivityIndicatorView* activity;
-@property (nonatomic, retain) UIWebView* webV;
-@property (nonatomic, retain) UIAlertView* alert;
+@property (nonatomic, retain) NSURL *webURL;
+@property (nonatomic, retain) UIActivityIndicatorView *activity;
+@property (nonatomic, retain) UIWebView *webView;
+@property (nonatomic, retain) UIAlertView *alert;
 
 @end
