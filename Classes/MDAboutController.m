@@ -122,6 +122,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                         break;
                 }
             }
+            
+            [icons release];
         } else {
             icon = [UIImage imageNamed:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFile"]];
         }
