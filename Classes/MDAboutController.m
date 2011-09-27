@@ -593,7 +593,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self generateCachedCellsIfNeeded];
-    return [[cachedCellHeights objectAtIndex:indexPath.row] floatValue];
+    CGFloat toolbarHeight = 0;
+    if (indexPath.section == 0 && indexPath.row == 0 && !self.navigationController.navigationBarHidden && self.navigationController.navigationBar.translucent)
+        toolbarHeight = self.navigationController.navigationBar.frame.size.height;
+    return [[cachedCellHeights objectAtIndex:indexPath.row] floatValue] + toolbarHeight;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
