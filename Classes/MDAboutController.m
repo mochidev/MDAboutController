@@ -637,7 +637,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     self.showsTitleBar = !self.navigationController;
     if ([titleBar isMemberOfClass:[MDACTitleBar class]]) {
-        [(MDACTitleBar *)titleBar setButtonHidden:(self.parentViewController.modalViewController != self)];
+        [(MDACTitleBar *)titleBar setButtonHidden:(self.parentViewController.class == [UITabBarController class])];
     }
 }
 
