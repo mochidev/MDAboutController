@@ -545,6 +545,20 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         cell.backgroundColor = [UIColor clearColor];
 }
 
+- (void)openMailToURL:(NSURL *)url subject:(NSString *)subject {
+    MFMailComposeViewController *mailer = [[[MFMailComposeViewController alloc] init] autorelease];
+    mailer.mailComposeDelegate = self;
+    [mailer setToRecipients:[NSArray arrayWithObject:url.resourceSpecifier]];
+    [mailer setSubject:subject];
+    [self presentModalViewController:mailer animated:YES];
+}
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller  
+          didFinishWithResult:(MFMailComposeResult)result 
+                        error:(NSError*)error {
+    [self dismissModalViewControllerAnimated:YES];
+}
+
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -564,7 +578,12 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         if ([(MDACListCredit *)credit itemAtIndex:index].link) {
             if ([(MDACListCredit *)credit itemAtIndex:index].link) {
                 if (!self.navigationController) {
-                    [[UIApplication sharedApplication] openURL:[(MDACListCredit *)credit itemAtIndex:index].link];
+                    NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
+                    if ([url.scheme isEqualToString:@"mailto"]) {
+                        [self openMailToURL:url subject:[(MDACListCredit *)credit itemAtIndex:index].name];
+                    } else {
+                        [[UIApplication sharedApplication] openURL:url];
+                    }
                 } else {
                     NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
                     
