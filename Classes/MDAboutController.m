@@ -265,11 +265,11 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             CGSize textSize = CGSizeMake(300, 30);
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
-                                                           constrainedToSize:CGSizeMake(450, 600)
+                                                           constrainedToSize:CGSizeMake(450, 1000)
                                                                lineBreakMode:UILineBreakModeWordWrap];
             } else {
                 textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
-                                                           constrainedToSize:CGSizeMake(300, 600)
+                                                           constrainedToSize:CGSizeMake(300, 1000)
                                                                lineBreakMode:UILineBreakModeWordWrap];
             }
             
