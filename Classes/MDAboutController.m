@@ -51,6 +51,15 @@ static NSString *MDACSingleListCellID   = @"MDACSingleListCell";
 static NSString *MDACTextCellID         = @"MDACTextCell";
 static NSString *MDACImageCellID        = @"MDACImageCell";
 
+@interface MDAboutController ()
+
+- (void)generateCachedCells; // internal
+- (void)generateCachedCellsIfNeeded; // internal
+
+- (void)openMailToRecipient:(NSString *)recipient subject:(NSString *)subject;
+
+@end
+
 @implementation MDAboutController
 
 @synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, credits;
@@ -545,16 +554,16 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         cell.backgroundColor = [UIColor clearColor];
 }
 
-- (void)openMailToURL:(NSURL *)url subject:(NSString *)subject
+- (void)openMailToRecipient:(NSString *)recipient subject:(NSString *)subject
 {
     UIViewController *mailer = [[[NSClassFromString(@"MFMailComposeViewController") alloc] init] autorelease];
-    [mailer setMailComposeDelegate:self];
-    [mailer setToRecipients:[NSArray arrayWithObject:url.resourceSpecifier]];
-    [mailer setSubject:subject];
+    [mailer performSelector:@selector(setMailComposeDelegate:) withObject:self];
+    [mailer performSelector:@selector(setToRecipients:) withObject:[NSArray arrayWithObject:recipient]];
+    [mailer performSelector:@selector(setSubject:) withObject:subject];
     [self presentModalViewController:mailer animated:YES];
 }
 
-- (void)mailComposeController:(id *)controller didFinishWithResult:(int)result error:(NSError *)error
+- (void)mailComposeController:(id)controller didFinishWithResult:(int)result error:(NSError *)error
 {
     [self dismissModalViewControllerAnimated:YES];
 }
@@ -594,7 +603,12 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 }
                 NSString *subject = [NSString stringWithFormat:@"%@%@ Support", appName, versionString];
                 
-                [self openMailToURL:url subject:subject];
+                NSString *recipient = [url resourceSpecifier];
+                if ([[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"]) {
+                    recipient = [NSString stringWithFormat:@"%@ <%@>", [[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"], recipient];
+                }
+                
+                [self openMailToRecipient:recipient subject:subject];
             } else if (!self.navigationController || !NSClassFromString(@"MFMailComposeViewController")) {
                 [[UIApplication sharedApplication] openURL:url];
             } else {

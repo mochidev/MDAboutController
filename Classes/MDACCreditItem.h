@@ -34,12 +34,14 @@
 @interface MDACCreditItem : NSObject {
     NSString *name;
     NSString *role;
+    NSDictionary *userAssociations;
     NSURL *link;
     UIViewController *viewController;
 }
 
 @property(nonatomic, copy) NSString *name;
 @property(nonatomic, copy) NSString *role;
+@property(nonatomic, copy) NSDictionary *userAssociations;
 @property(nonatomic, retain) NSURL *link;
 @property(nonatomic, retain) UIViewController *viewController;
 

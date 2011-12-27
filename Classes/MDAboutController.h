@@ -51,9 +51,6 @@
     BOOL hasSimpleBackground;
 }
 
-- (void)generateCachedCells; // internal
-- (void)generateCachedCellsIfNeeded; // internal
-
 - (IBAction)dismiss:(id)sender; // hide if modal
 
 @property (nonatomic, retain) UIView *titleBar;

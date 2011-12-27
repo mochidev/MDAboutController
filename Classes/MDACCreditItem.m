@@ -33,7 +33,7 @@
 
 @implementation MDACCreditItem
 
-@synthesize name, role, link, viewController;
+@synthesize name, role, link, viewController, userAssociations;
 
 - (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL
 {
@@ -89,9 +89,15 @@
     if (!linkString || [aDict objectForKey:@"Email"]) {
         linkString = [NSString stringWithFormat:@"mailto:%@", [aDict objectForKey:@"Email"]];;
     }
-    return [self initWithName:[aDict objectForKey:@"Name"]
-                         role:[aDict objectForKey:@"Role"]
-                   linkString:linkString];
+    if (self = [self initWithName:[aDict objectForKey:@"Name"]
+                             role:[aDict objectForKey:@"Role"]
+                       linkString:linkString]) {
+        NSMutableDictionary *newDict = [aDict mutableCopy];
+        [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Link", @"Email", @"Name", @"Role", nil]];
+        self.userAssociations = newDict;
+        [newDict release];
+    }
+    return self;
 }
 
 + (id)itemWithDictionary:(NSDictionary *)aDict
@@ -101,6 +107,7 @@
 
 - (void)dealloc
 {
+    [userAssociations release];
     [viewController release];
     [name release];
     [role release];
