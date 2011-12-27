@@ -64,7 +64,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 @synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, credits;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (id)initWithStyle:(id)style
 {
     if ((self = [super initWithNibName:nil bundle:nil])) {
         self.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -162,7 +162,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             }
             [creditsFile release];
         }
-            
+        
         // To remove (:sadface:) the following credit, call [aboutController removeLastCredit]; after initializing your controller.
         
         [credits addObject:[MDACTextCredit textCreditWithText:@"About screen powered by MDAboutViewController, available free on GitHub!"
@@ -171,6 +171,11 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                                                       linkURL:[NSURL URLWithString:@"https://github.com/mochidev/MDAboutControllerDemo"]]];
     }
     return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    return [self initWithStyle:nil];
 }
 
 - (void)setBackgroundColor:(UIColor *)aColor

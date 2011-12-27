@@ -30,6 +30,7 @@
 //
 
 #import "MDAboutController.h"
+#import "MDAboutNavigationController.h"
 #import "UIImage+DBMaskedImageAdditions.h"
 #import "MDACTitleBar.h"
 #import "MDACCredit.h"

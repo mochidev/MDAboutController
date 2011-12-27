@@ -51,6 +51,8 @@
     BOOL hasSimpleBackground;
 }
 
+- (id)initWithStyle:(id)style;
+
 - (IBAction)dismiss:(id)sender; // hide if modal
 
 @property (nonatomic, retain) UIView *titleBar;

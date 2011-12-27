@@ -114,7 +114,7 @@
 #pragma mark UI Alert delegate to pop back
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex == 0){
+    if (buttonIndex == 0) {
         if (self.navigationController) {
             [self.navigationController popViewControllerAnimated:YES];
         } else {
@@ -122,6 +122,11 @@
         }      
     }
     [alertView autorelease];
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return YES;
 }
 
 - (void)dealloc

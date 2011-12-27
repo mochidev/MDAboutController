@@ -86,7 +86,7 @@
 - (id)initWithDictionary:(NSDictionary *)aDict
 {
     NSString *linkString = [aDict objectForKey:@"Link"];
-    if (!linkString || [aDict objectForKey:@"Email"]) {
+    if (!linkString && [aDict objectForKey:@"Email"]) {
         linkString = [NSString stringWithFormat:@"mailto:%@", [aDict objectForKey:@"Email"]];;
     }
     if (self = [self initWithName:[aDict objectForKey:@"Name"]
