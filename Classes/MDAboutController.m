@@ -39,6 +39,7 @@
 #import "MDACImageCredit.h"
 #import "MDACIconCredit.h"
 #import "MDACWebViewController.h"
+#import "MDACStyle.h"
 
 #pragma mark Constants
 
@@ -58,19 +59,23 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)openMailToRecipient:(NSString *)recipient subject:(NSString *)subject;
 
+@property (nonatomic, retain, readwrite) MDACStyle *style;
+
 @end
 
 @implementation MDAboutController
 
-@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, credits;
+@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, credits, style;
 
-- (id)initWithStyle:(id)style
+- (id)initWithStyle:(MDACStyle *)aStyle
 {
     if ((self = [super initWithNibName:nil bundle:nil])) {
+        self.style = aStyle;
         self.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         self.modalPresentationStyle = UIModalPresentationFormSheet;
         
-        self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"MDACBackground.png"]];
+        self.backgroundColor = [self.style backgroundColor];
+        self.hasSimpleBackground = [self.style hasSimpleBackground];
         
         credits = [[NSMutableArray alloc] init];
         
@@ -190,8 +195,17 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     self.hasSimpleBackground = !CGColorGetPattern(backgroundColor.CGColor);
 }
 
+- (MDACStyle *)style
+{
+    if (!style) {
+        self.style = [MDACStyle style];
+    }
+    return style;
+}
+
 - (void)dealloc
 {
+    [style release];
     [cachedCellCredits release];
     [cachedCellHeights release];
     [cachedCellIDs release];
@@ -231,7 +245,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     int j;
     
     [cachedCellCredits addObject:[NSNull null]];
-    [cachedCellHeights addObject:[NSNumber numberWithFloat:25]];
+    [cachedCellHeights addObject:[NSNumber numberWithFloat:[self.style spacerHeight]]];
     [cachedCellIDs addObject:MDACSpacerCellID];
     [cachedCellIndices addObject:[NSNull null]];
     
@@ -256,7 +270,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 }
                 
                 [cachedCellCredits addObject:tempCredit];
-                [cachedCellHeights addObject:[NSNumber numberWithFloat:44]];
+                [cachedCellHeights addObject:[NSNumber numberWithFloat:[self.style listHeight]]];
                 [cachedCellIDs addObject:cellID];
                 [cachedCellIndices addObject:[NSNumber numberWithInteger:index]];
             }
@@ -267,7 +281,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
                 iconHeight = 72;
             
-            iconHeight += 20;
+            iconHeight += [self.style iconAdditionalHeight];
             
             [cachedCellCredits addObject:tempCredit];
             [cachedCellHeights addObject:[NSNumber numberWithFloat:iconHeight]];
@@ -302,7 +316,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             i += 1;
             
             [cachedCellCredits addObject:tempCredit];
-            [cachedCellHeights addObject:[NSNumber numberWithFloat:25]];
+            [cachedCellHeights addObject:[NSNumber numberWithFloat:[self.style spacerHeight]]];
             [cachedCellIDs addObject:MDACSpacerCellID];
             [cachedCellIndices addObject:[NSNull null]];
         }
@@ -310,7 +324,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         i += 1;
         
         [cachedCellCredits addObject:[NSNull null]];
-        [cachedCellHeights addObject:[NSNumber numberWithFloat:25]];
+        [cachedCellHeights addObject:[NSNumber numberWithFloat:[self.style spacerHeight]]];
         [cachedCellIDs addObject:MDACSpacerCellID];
         [cachedCellIndices addObject:[NSNull null]];
     }
@@ -354,27 +368,30 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
         
         if (cellID == MDACTopListCellID || cellID == MDACMiddleListCellID || cellID == MDACBottomListCellID || cellID == MDACSingleListCellID) {
-            UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
-            UIView *selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 44)];
+            UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, [self.style listHeight])];
+            UIView *selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, [self.style listHeight])];
             
-            UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, 44)];
-            UIImageView *selectedBackgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, 44)];
+            UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, [self.style listHeight])];
+            UIImageView *selectedBackgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, [self.style listHeight])];
             
             if (cellID == MDACTopListCellID) {
-                backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, 45);
-                backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundTop.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
-                selectedBackgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, 45);
-                selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedTop.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
+                backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, [self.style listHeight]+1);
+                backgroundImage.image = [self.style listCellBackgroundTop];
+                selectedBackgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, [self.style listHeight]+1);
+                selectedBackgroundImage.image = [self.style listCellBackgroundTopSelected];
             } else if (cellID == MDACMiddleListCellID) {
-                backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundMiddle.png"] stretchableImageWithLeftCapWidth:1 topCapHeight:10];
-                selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedMiddle.png"] stretchableImageWithLeftCapWidth:1 topCapHeight:10];
+                backgroundImage.image = [self.style listCellBackgroundMiddle];
+                selectedBackgroundImage.image = [self.style listCellBackgroundMiddleSelected];
             } else if (cellID == MDACBottomListCellID) {
-                backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundBottom.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
-                selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedBottom.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
+                backgroundImage.frame = CGRectMake(10, 0, tableView.bounds.size.width-20, [self.style listHeight]+1);
+                backgroundImage.image = [self.style listCellBackgroundBottom];
+                selectedBackgroundImage.frame = CGRectMake(10, 0, tableView.bounds.size.width-20, [self.style listHeight]+1);
+                selectedBackgroundImage.image = [self.style listCellBackgroundBottomSelected];
             } else {
-                backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, 45);
-                backgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSingle.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
-                selectedBackgroundImage.image = [[UIImage imageNamed:@"MDACCellBackgroundSelectedSingle.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:10];
+                backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, [self.style listHeight]+2);
+                backgroundImage.image = [self.style listCellBackgroundSingle];
+                selectedBackgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, [self.style listHeight]+2);
+                selectedBackgroundImage.image = [self.style listCellBackgroundSingleSelected];
             }
             
             backgroundImage.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -392,21 +409,21 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             [selectedBackgroundView release];
             
             textLabel = [[UILabel alloc] init];
-            textLabel.font = [UIFont boldSystemFontOfSize:17];
-            textLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
-            textLabel.textColor = [UIColor whiteColor];
-            textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
-            textLabel.shadowOffset = CGSizeMake(0, -1);
+            textLabel.font = [self.style listCellFont];
+            textLabel.backgroundColor = [self.style listCellBackgroundColor];
+            textLabel.textColor = [self.style listCellTextColor];
+            textLabel.shadowColor = [self.style listCellShadowColor];
+            textLabel.shadowOffset = [self.style listCellShadowOffset];
             textLabel.tag = 1;
             [cell.contentView addSubview:textLabel];
             [textLabel release];
             
             detailTextLabel = [[UILabel alloc] init];
-            detailTextLabel.font = [UIFont boldSystemFontOfSize:15];
-            detailTextLabel.backgroundColor = [UIColor colorWithWhite:94./255. alpha:1];
-            detailTextLabel.textColor = [UIColor whiteColor];
-            detailTextLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
-            detailTextLabel.shadowOffset = CGSizeMake(0, -1);
+            detailTextLabel.font = [self.style listCellDetailFont];
+            detailTextLabel.backgroundColor = [self.style listCellBackgroundColor];
+            detailTextLabel.textColor = [self.style listCellTextColor];
+            detailTextLabel.shadowColor = [self.style listCellShadowColor];
+            detailTextLabel.shadowOffset = [self.style listCellShadowOffset];
             detailTextLabel.textAlignment = UITextAlignmentRight;
             detailTextLabel.tag = 2;
             [cell.contentView addSubview:detailTextLabel];
@@ -414,7 +431,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             
             linkAvailableImageView = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.bounds.size.width-39, 9, 24, 24)];
             linkAvailableImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-            linkAvailableImageView.image = [UIImage imageNamed:@"MDACLinkArrow.png"];
+            linkAvailableImageView.image = [self.style listCellLinkArrow];
             linkAvailableImageView.tag = 3;
             [cell.contentView addSubview:linkAvailableImageView];
             [linkAvailableImageView release];
@@ -446,23 +463,23 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             [iconView release];
             
             textLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/2.-17), 170, 22)];
-            textLabel.font = [UIFont boldSystemFontOfSize:18];
+            textLabel.font = [self.style iconCellFont];
             textLabel.backgroundColor = [UIColor clearColor];
             textLabel.opaque = NO;
-            textLabel.textColor = [UIColor whiteColor];
-            textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.8];
-            textLabel.shadowOffset = CGSizeMake(0, -1);
+            textLabel.textColor = [self.style iconCellTextColor];
+            textLabel.shadowColor = [self.style iconCellShadowColor];
+            textLabel.shadowOffset = [self.style iconCellShadowOffset];
             textLabel.tag = 1;
             [containerView addSubview:textLabel];
             [textLabel release];
             
             detailTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/2.+3), 170, 20)];
-            detailTextLabel.font = [UIFont boldSystemFontOfSize:14];
+            detailTextLabel.font = [self.style iconCellDetailFont];
             detailTextLabel.backgroundColor = [UIColor clearColor];
             detailTextLabel.opaque = NO;
-            detailTextLabel.textColor = [UIColor whiteColor];
-            detailTextLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.8];
-            detailTextLabel.shadowOffset = CGSizeMake(0, -1);
+            detailTextLabel.textColor = [self.style iconCellTextColor];
+            detailTextLabel.shadowColor = [self.style iconCellShadowColor];
+            detailTextLabel.shadowOffset = [self.style iconCellShadowOffset];
             detailTextLabel.tag = 2;
             [containerView addSubview:detailTextLabel];
             [detailTextLabel release];
@@ -478,10 +495,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             textLabel.numberOfLines = 0;
             textLabel.backgroundColor = [UIColor clearColor];
             textLabel.opaque = NO;
-            textLabel.textColor = [UIColor colorWithWhite:0.75 alpha:1];
-            textLabel.highlightedTextColor = [UIColor colorWithWhite:0.5 alpha:1];
-            textLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.8];
-            textLabel.shadowOffset = CGSizeMake(0, -1);
+            textLabel.textColor = [self.style textCellTextColor];
+            textLabel.highlightedTextColor = [self.style textCellHighlightedTextColor];
+            textLabel.shadowColor = [self.style textCellShadowColor];
+            textLabel.shadowOffset = [self.style textCellShadowOffset];
             textLabel.tag = 1;
             [cell.contentView addSubview:textLabel];
             [textLabel release];
@@ -555,7 +572,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)tableView:(UITableView *)aTableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!self.hasSimpleBackground)
+    if (!self.hasSimpleBackground || [cell.reuseIdentifier isEqualToString:MDACSpacerCellID])
         cell.backgroundColor = [UIColor clearColor];
 }
 

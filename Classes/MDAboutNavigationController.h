@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-@class MDAboutController;
+@class MDAboutController, MDACStyle;
 
 @interface MDAboutNavigationController : UINavigationController
 
-- (id)initWithStyle:(id)style;
+- (id)initWithStyle:(MDACStyle *)style;
 
 @property (nonatomic, readonly) MDAboutController *aboutController;
 

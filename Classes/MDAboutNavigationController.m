@@ -8,10 +8,11 @@
 
 #import "MDAboutNavigationController.h"
 #import "MDAboutController.h"
+#import "MDACStyle.h"
 
 @implementation MDAboutNavigationController
 
-- (id)initWithStyle:(id)style
+- (id)initWithStyle:(MDACStyle *)style
 {
     if (self = [super init]) {
         MDAboutController *aboutController = [[MDAboutController alloc] initWithStyle:style];
@@ -42,7 +43,7 @@
     }
 }
 
-- (void)hideAbout:(id)sender
+- (void)hideAbout:(MDACStyle *)sender
 {
     [self dismissModalViewControllerAnimated:YES];
 }

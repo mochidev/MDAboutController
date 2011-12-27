@@ -32,9 +32,10 @@
 
 #import <MessageUI/MessageUI.h>
 #import <UIKit/UIKit.h>
-@class MDACCredit;
+@class MDACCredit, MDACStyle;
 
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
+  @private
     UIView *titleBar;
     UITableView *tableView;
     
@@ -49,12 +50,15 @@
     
     UIColor *backgroundColor;
     BOOL hasSimpleBackground;
+    
+    MDACStyle *style;
 }
 
-- (id)initWithStyle:(id)style;
+- (id)initWithStyle:(MDACStyle *)style;
 
 - (IBAction)dismiss:(id)sender; // hide if modal
 
+@property (nonatomic, readonly, retain) MDACStyle *style;
 @property (nonatomic, retain) UIView *titleBar;
 
 @property (nonatomic) BOOL showsTitleBar; // set to NO automatically when in navcontroller. 

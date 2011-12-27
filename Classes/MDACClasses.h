@@ -40,3 +40,5 @@
 #import "MDACImageCredit.h"
 #import "MDACIconCredit.h"
 #import "MDACWebViewController.h"
+#import "MDACStyle.h"
+#import "MDACMochiDevStyle.h"
