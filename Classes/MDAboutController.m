@@ -547,16 +547,14 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)openMailToURL:(NSURL *)url subject:(NSString *)subject
 {
-    MFMailComposeViewController *mailer = [[[MFMailComposeViewController alloc] init] autorelease];
-    mailer.mailComposeDelegate = self;
+    UIViewController *mailer = [[[NSClassFromString(@"MFMailComposeViewController") alloc] init] autorelease];
+    [mailer setMailComposeDelegate:self];
     [mailer setToRecipients:[NSArray arrayWithObject:url.resourceSpecifier]];
     [mailer setSubject:subject];
     [self presentModalViewController:mailer animated:YES];
 }
 
-- (void)mailComposeController:(MFMailComposeViewController*)controller  
-          didFinishWithResult:(MFMailComposeResult)result 
-                        error:(NSError*)error
+- (void)mailComposeController:(id *)controller didFinishWithResult:(int)result error:(NSError *)error
 {
     [self dismissModalViewControllerAnimated:YES];
 }
@@ -579,7 +577,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
         NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
         if (url) {
-            if ([url.scheme isEqualToString:@"mailto"]) {
+            if ([url.scheme isEqualToString:@"mailto"] && NSClassFromString(@"MFMailComposeViewController")) {
                 NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
                 NSString *versionString = nil;
                 NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
@@ -597,7 +595,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 NSString *subject = [NSString stringWithFormat:@"%@%@ Support", appName, versionString];
                 
                 [self openMailToURL:url subject:subject];
-            } else if (!self.navigationController) {
+            } else if (!self.navigationController || !NSClassFromString(@"MFMailComposeViewController")) {
                 [[UIApplication sharedApplication] openURL:url];
             } else {
                 NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;

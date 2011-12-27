@@ -30,11 +30,11 @@
 //  automatically by the code that links back to this page :)
 //
 
-#import <MessageUI/MFMailComposeViewController.h>
+#import <MessageUI/MessageUI.h>
 #import <UIKit/UIKit.h>
 @class MDACCredit;
 
-@interface MDAboutController : UIViewController <MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate> {
+@interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
     UIView *titleBar;
     UITableView *tableView;
     
