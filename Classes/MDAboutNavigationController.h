@@ -11,7 +11,7 @@
 
 @interface MDAboutNavigationController : UINavigationController
 
-- (id)initWithStyle:(Class)style;
+- (id)initWithStyle:(id)style;
 
 @property (nonatomic, readonly) MDAboutController *aboutController;
 

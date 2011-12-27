@@ -591,30 +591,43 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
         NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
         if (url) {
-            if ([url.scheme isEqualToString:@"mailto"] && NSClassFromString(@"MFMailComposeViewController")) {
-                NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
-                NSString *versionString = nil;
-                NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-                NSString *bundleVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-                
-                if (bundleShortVersionString && bundleVersionString) {
-                    versionString = [NSString stringWithFormat:@" %@ (%@)",
-                                     bundleShortVersionString,
-                                     bundleVersionString];
-                } else if (bundleShortVersionString) {
-                    versionString = [NSString stringWithFormat:@" %@", bundleShortVersionString];
-                } else if (bundleVersionString) {
-                    versionString = [NSString stringWithFormat:@" %@", bundleVersionString];
+            if ([url.scheme isEqualToString:@"x-controller"]) {
+                Class ViewController = NSClassFromString([url resourceSpecifier]);
+                if ([ViewController isSubclassOfClass:[UIViewController class]]) {
+                    if (self.navigationController) {
+                        UIViewController *viewController = [[ViewController alloc] init];
+                        [self.navigationController pushViewController:viewController animated:YES];     
+                        [viewController release];
+                    }
                 }
-                NSString *subject = [NSString stringWithFormat:@"%@%@ Support", appName, versionString];
-                
-                NSString *recipient = [url resourceSpecifier];
-                if ([[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"]) {
-                    recipient = [NSString stringWithFormat:@"%@ <%@>", [[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"], recipient];
+            } else if ([url.scheme isEqualToString:@"mailto"]) {
+                if (NSClassFromString(@"MFMailComposeViewController")) {
+                    NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+                    NSString *versionString = nil;
+                    NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+                    NSString *bundleVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+                    
+                    if (bundleShortVersionString && bundleVersionString) {
+                        versionString = [NSString stringWithFormat:@" %@ (%@)",
+                                         bundleShortVersionString,
+                                         bundleVersionString];
+                    } else if (bundleShortVersionString) {
+                        versionString = [NSString stringWithFormat:@" %@", bundleShortVersionString];
+                    } else if (bundleVersionString) {
+                        versionString = [NSString stringWithFormat:@" %@", bundleVersionString];
+                    }
+                    NSString *subject = [NSString stringWithFormat:@"%@%@ Support", appName, versionString];
+                    
+                    NSString *recipient = [url resourceSpecifier];
+                    if ([[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"]) {
+                        recipient = [NSString stringWithFormat:@"%@ <%@>", [[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"], recipient];
+                    }
+                    
+                    [self openMailToRecipient:recipient subject:subject];
+                } else {
+                    [[UIApplication sharedApplication] openURL:url];
                 }
-                
-                [self openMailToRecipient:recipient subject:subject];
-            } else if (!self.navigationController || !NSClassFromString(@"MFMailComposeViewController")) {
+            } else if (!self.navigationController) {
                 [[UIApplication sharedApplication] openURL:url];
             } else {
                 NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;

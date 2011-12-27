@@ -11,10 +11,10 @@
 
 @implementation MDAboutNavigationController
 
-- (id)initWithStyle:(Class)style
+- (id)initWithStyle:(id)style
 {
     if (self = [super init]) {
-        MDAboutController *aboutController = [[MDAboutController alloc] init];
+        MDAboutController *aboutController = [[MDAboutController alloc] initWithStyle:style];
         [self pushViewController:aboutController animated:NO];
         [aboutController release];
     }

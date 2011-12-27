@@ -89,11 +89,14 @@
     if (!linkString && [aDict objectForKey:@"Email"]) {
         linkString = [NSString stringWithFormat:@"mailto:%@", [aDict objectForKey:@"Email"]];;
     }
+    if (!linkString && [aDict objectForKey:@"Controller"]) {
+        linkString = [NSString stringWithFormat:@"x-controller:%@", [aDict objectForKey:@"Controller"]];;
+    }
     if (self = [self initWithName:[aDict objectForKey:@"Name"]
                              role:[aDict objectForKey:@"Role"]
                        linkString:linkString]) {
         NSMutableDictionary *newDict = [aDict mutableCopy];
-        [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Link", @"Email", @"Name", @"Role", nil]];
+        [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Link", @"Email", @"Name", @"Role", @"Controller", nil]];
         self.userAssociations = newDict;
         [newDict release];
     }
