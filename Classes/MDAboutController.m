@@ -545,7 +545,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         cell.backgroundColor = [UIColor clearColor];
 }
 
-- (void)openMailToURL:(NSURL *)url subject:(NSString *)subject {
+- (void)openMailToURL:(NSURL *)url subject:(NSString *)subject
+{
     MFMailComposeViewController *mailer = [[[MFMailComposeViewController alloc] init] autorelease];
     mailer.mailComposeDelegate = self;
     [mailer setToRecipients:[NSArray arrayWithObject:url.resourceSpecifier]];
@@ -555,7 +556,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)mailComposeController:(MFMailComposeViewController*)controller  
           didFinishWithResult:(MFMailComposeResult)result 
-                        error:(NSError*)error {
+                        error:(NSError*)error
+{
     [self dismissModalViewControllerAnimated:YES];
 }
 
@@ -575,22 +577,34 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         index = [[cachedCellIndices objectAtIndex:indexPath.row] integerValue];
     
     if ([credit isMemberOfClass:[MDACListCredit class]]) {
-        if ([(MDACListCredit *)credit itemAtIndex:index].link) {
-            if ([(MDACListCredit *)credit itemAtIndex:index].link) {
-                if (!self.navigationController) {
-                    NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
-                    if ([url.scheme isEqualToString:@"mailto"]) {
-                        [self openMailToURL:url subject:[(MDACListCredit *)credit itemAtIndex:index].name];
-                    } else {
-                        [[UIApplication sharedApplication] openURL:url];
-                    }
-                } else {
-                    NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
-                    
-                    MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
-                    [[self navigationController] pushViewController:linkViewController animated:YES];     
-                    [linkViewController release];
+        NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
+        if (url) {
+            if ([url.scheme isEqualToString:@"mailto"]) {
+                NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+                NSString *versionString = nil;
+                NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+                NSString *bundleVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+                
+                if (bundleShortVersionString && bundleVersionString) {
+                    versionString = [NSString stringWithFormat:@" %@ (%@)",
+                                     bundleShortVersionString,
+                                     bundleVersionString];
+                } else if (bundleShortVersionString) {
+                    versionString = [NSString stringWithFormat:@" %@", bundleShortVersionString];
+                } else if (bundleVersionString) {
+                    versionString = [NSString stringWithFormat:@" %@", bundleVersionString];
                 }
+                NSString *subject = [NSString stringWithFormat:@"%@%@ Support", appName, versionString];
+                
+                [self openMailToURL:url subject:subject];
+            } else if (!self.navigationController) {
+                [[UIApplication sharedApplication] openURL:url];
+            } else {
+                NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
+                
+                MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
+                [[self navigationController] pushViewController:linkViewController animated:YES];     
+                [linkViewController release];
             }
         }
     } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {

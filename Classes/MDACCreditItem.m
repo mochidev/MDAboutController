@@ -85,9 +85,13 @@
 
 - (id)initWithDictionary:(NSDictionary *)aDict
 {
+    NSString *linkString = [aDict objectForKey:@"Link"];
+    if (!linkString || [aDict objectForKey:@"Email"]) {
+        linkString = [NSString stringWithFormat:@"mailto:%@", [aDict objectForKey:@"Email"]];;
+    }
     return [self initWithName:[aDict objectForKey:@"Name"]
                          role:[aDict objectForKey:@"Role"]
-                   linkString:[aDict objectForKey:@"Link"]];
+                   linkString:linkString];
 }
 
 + (id)itemWithDictionary:(NSDictionary *)aDict
