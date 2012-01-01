@@ -69,6 +69,11 @@
     return 20;
 }
 
+- (CGFloat)listTitleHeight
+{
+    return 23;
+}
+
 - (UIImage *)listCellBackgroundTop
 {
     return [[UIImage imageNamed:@"MDACCellBackgroundTop.png"] stretchableImageWithLeftCapWidth:7 topCapHeight:10];
@@ -129,6 +134,11 @@
     return [UIColor blackColor];
 }
 
+- (UIColor *)listCellDetailTextColor
+{
+    return [UIColor colorWithWhite:0 alpha:0.6];
+}
+
 - (UIColor *)listCellShadowColor
 {
     return [UIColor colorWithWhite:253./255. alpha:0.6];
@@ -142,6 +152,26 @@
 - (UIImage *)listCellLinkArrow
 {
     return [UIImage imageNamed:@"MDACLinkArrow.png"];
+}
+
+- (UIFont *)listCellTitleFont
+{
+    return [UIFont boldSystemFontOfSize:17];
+}
+
+- (UIColor *)listCellTitleTextColor
+{
+    return [self iconCellTextColor];
+}
+
+- (UIColor *)listCellTitleShadowColor
+{
+    return [self iconCellShadowColor];
+}
+
+- (CGSize)listCellTitleShadowOffset
+{
+    return [self iconCellShadowOffset];
 }
 
 - (UIFont *)iconCellFont

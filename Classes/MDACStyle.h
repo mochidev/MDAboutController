@@ -47,6 +47,7 @@
 - (CGFloat)spacerHeight;
 - (CGFloat)listHeight;
 - (CGFloat)iconAdditionalHeight;
+- (CGFloat)listTitleHeight;
 
 - (UIImage *)listCellBackgroundTop;
 - (UIImage *)listCellBackgroundMiddle;
@@ -62,9 +63,15 @@
 - (UIFont *)listCellDetailFont;
 - (UIColor *)listCellBackgroundColor;
 - (UIColor *)listCellTextColor;
+- (UIColor *)listCellDetailTextColor;
 - (UIColor *)listCellShadowColor;
 - (CGSize)listCellShadowOffset;
 - (UIImage *)listCellLinkArrow;
+
+- (UIFont *)listCellTitleFont;
+- (UIColor *)listCellTitleTextColor;
+- (UIColor *)listCellTitleShadowColor;
+- (CGSize)listCellTitleShadowOffset;
 
 - (UIFont *)iconCellFont;
 - (UIFont *)iconCellDetailFont;

@@ -99,6 +99,11 @@
     return [UIColor whiteColor];
 }
 
+- (UIColor *)listCellDetailTextColor
+{
+    return [UIColor colorWithWhite:1 alpha:0.7];
+}
+
 - (UIColor *)listCellShadowColor
 {
     return [UIColor colorWithWhite:0 alpha:0.6];
