@@ -117,7 +117,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             float lastSize = 0;
             
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                targetSize = 72;
+                targetSize = 72.*[UIScreen mainScreen].scale;
             }
             
             NSMutableArray *icons = [[NSMutableArray alloc] init];
