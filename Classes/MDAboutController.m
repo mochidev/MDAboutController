@@ -48,6 +48,8 @@
 #import "MDACIconCredit.h"
 #import "MDACWebViewController.h"
 #import "MDACStyle.h"
+#import <objc/runtime.h>
+#import <objc/message.h>
 
 #pragma mark Constants
 
@@ -175,6 +177,32 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 }
             }
             [creditsFile release];
+        }
+        
+        int numClasses;
+        Class *classes = NULL;
+        numClasses = objc_getClassList(NULL, 0);
+        
+        if (numClasses > 0 ) {
+            classes = malloc(sizeof(Class) * numClasses);
+            numClasses = objc_getClassList(classes, numClasses);
+            
+            for (int i = 0; i < numClasses; i++) {
+                Class actualClass = object_getClass(classes[i]);
+                if (actualClass && class_respondsToSelector(actualClass, @selector(respondsToSelector:))) {
+                    unsigned int numMethods = 0;
+                    Method *methods = class_copyMethodList(actualClass, &numMethods);
+                    
+                    for (int j = 0; j < numMethods; j++) {
+                        if (method_getName(methods[j]) == @selector(MDAboutControllerTextCreditDictionary)) {
+//                            NSLog(@"Class %@ is included", NSStringFromClass(classes[i]));
+                            [credits addObject:[MDACTextCredit textCreditWithDictionary:[classes[i] performSelector:@selector(MDAboutControllerTextCreditDictionary)]]];
+                        }
+                    }
+                    free(methods);
+                }
+            }
+            free(classes);
         }
         
         // To remove (:sadface:) the following credit, call [aboutController removeLastCredit]; after initializing your controller.
