@@ -655,7 +655,16 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     [mailer performSelector:@selector(setMailComposeDelegate:) withObject:self];
     [mailer performSelector:@selector(setToRecipients:) withObject:[NSArray arrayWithObject:recipient]];
     [mailer performSelector:@selector(setSubject:) withObject:subject];
-    [self presentModalViewController:mailer animated:YES];
+    
+    // dear compiler warning... shut up
+    // the following should be fully backwards compatible.
+    if ([self respondsToSelector:@selector(presentViewController:animated:completion:)]) {
+        objc_msgSend(self, @selector(presentViewController:animated:completion:), mailer, YES, NULL);
+//        [self presentViewController:mailer animated:YES completion:NULL];
+    } else {
+        objc_msgSend(self, @selector(presentModalViewController:animated:), mailer, YES);
+//        [self presentModalViewController:mailer animated:YES];
+    }
 }
 
 - (void)mailComposeController:(id)controller didFinishWithResult:(int)result error:(NSError *)error
