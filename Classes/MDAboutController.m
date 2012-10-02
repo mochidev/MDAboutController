@@ -656,20 +656,32 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     [mailer performSelector:@selector(setToRecipients:) withObject:[NSArray arrayWithObject:recipient]];
     [mailer performSelector:@selector(setSubject:) withObject:subject];
     
+    UIViewController *parent = self;
+    
+    if ([self isViewLoaded] && self.view.window.rootViewController != nil) {
+        parent = self.view.window.rootViewController;
+    }
+    
     // dear compiler warning... shut up
     // the following should be fully backwards compatible.
-    if ([self respondsToSelector:@selector(presentViewController:animated:completion:)]) {
-        objc_msgSend(self, @selector(presentViewController:animated:completion:), mailer, YES, NULL);
+    if ([parent respondsToSelector:@selector(presentViewController:animated:completion:)]) {
+        objc_msgSend(parent, @selector(presentViewController:animated:completion:), mailer, YES, NULL);
 //        [self presentViewController:mailer animated:YES completion:NULL];
     } else {
-        objc_msgSend(self, @selector(presentModalViewController:animated:), mailer, YES);
+        objc_msgSend(parent, @selector(presentModalViewController:animated:), mailer, YES);
 //        [self presentModalViewController:mailer animated:YES];
     }
 }
 
 - (void)mailComposeController:(id)controller didFinishWithResult:(int)result error:(NSError *)error
 {
-    [self dismissModalViewControllerAnimated:YES];
+//    UIViewController *parent = self;
+//    
+//    if ([self isViewLoaded] && self.view.window.rootViewController != nil) {
+//        parent = self.view.window.rootViewController;
+//    }
+    
+    [controller dismissModalViewControllerAnimated:YES];
 }
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
