@@ -46,7 +46,28 @@
 
 - (UIColor *)backgroundColor
 {
-    return [UIColor groupTableViewBackgroundColor];
+    __strong static UIImage* tableViewBackgroundImage = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        CGFloat scale = [[UIScreen mainScreen] scale];
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(8.f, 1.f), NO, scale);
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        if (scale > 1) {
+            [[UIColor colorWithRed:206/255. green:211/255. blue:220/255. alpha:1] setFill];
+            CGContextFillRect(c, CGRectMake(0, 0, 5.5, 1));
+            [[UIColor colorWithRed:203/255. green:208/255. blue:218/255. alpha:1] setFill];
+            CGContextFillRect(c, CGRectMake(5.5, 0, 2.5, 1));
+        } else {
+            [[UIColor colorWithRed:206/255. green:211/255. blue:220/255. alpha:1] setFill];
+            CGContextFillRect(c, CGRectMake(0, 0, 6, 1));
+            [[UIColor colorWithRed:203/255. green:208/255. blue:218/255. alpha:1] setFill];
+            CGContextFillRect(c, CGRectMake(6, 0, 2, 1));
+        }
+        tableViewBackgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    });
+    return [UIColor colorWithPatternImage:tableViewBackgroundImage];
+    
 }
 
 - (BOOL)hasSimpleBackground
