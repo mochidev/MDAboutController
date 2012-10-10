@@ -37,11 +37,13 @@
 
 #import <UIKit/UIKit.h>
 @class MDAboutController, MDACStyle;
+@protocol MDAboutControllerDelegate;
 
 @interface MDAboutNavigationController : UINavigationController
 
 - (id)initWithStyle:(MDACStyle *)style;
 
 @property (nonatomic, readonly) MDAboutController *aboutController;
+@property (nonatomic, assign) id<MDAboutControllerDelegate> delegate; // sets delegate for underlying aboutController, not an instance of this object! This means the underlying aboutController is returned through delegate methods!
 
 @end

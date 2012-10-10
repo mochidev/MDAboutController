@@ -76,7 +76,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 @implementation MDAboutController
 
-@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, credits, style;
+@synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, credits, style, delegate;
 
 - (id)initWithStyle:(MDACStyle *)aStyle
 {
@@ -466,6 +466,9 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             
             detailTextLabel = [[UILabel alloc] init];
             detailTextLabel.font = [self.style listCellDetailFont];
+            detailTextLabel.minimumFontSize = 12;
+            detailTextLabel.adjustsFontSizeToFitWidth = YES;
+            detailTextLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
             detailTextLabel.backgroundColor = [self.style listCellBackgroundColor];
             detailTextLabel.textColor = [self.style listCellDetailTextColor];
             detailTextLabel.shadowColor = [self.style listCellShadowColor];
@@ -662,6 +665,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         parent = self.view.window.rootViewController;
     }
     
+    if ([delegate respondsToSelector:@selector(aboutControllerWillPresentMailController:)]) {
+        [delegate aboutControllerWillPresentMailController:self];
+    }
+    
     // dear compiler warning... shut up
     // the following should be fully backwards compatible.
     if ([parent respondsToSelector:@selector(presentViewController:animated:completion:)]) {
@@ -682,6 +689,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 //    }
     
     [controller dismissModalViewControllerAnimated:YES];
+    
+    if ([delegate respondsToSelector:@selector(aboutControllerDidDismissMailController:)]) {
+        [delegate aboutControllerDidDismissMailController:self];
+    }
 }
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -815,7 +826,9 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     [super viewWillAppear:animated];
     
     self.showsTitleBar = !self.navigationController;
-    if ([titleBar isMemberOfClass:[MDACTitleBar class]]) {
+    if ([delegate respondsToSelector:@selector(aboutControllerShouldDisplayDoneButton:)]) {
+        [(MDACTitleBar *)titleBar setButtonHidden:![delegate aboutControllerShouldDisplayDoneButton:self]];
+    } else if ([titleBar isMemberOfClass:[MDACTitleBar class]]) {
         [(MDACTitleBar *)titleBar setButtonHidden:(self.parentViewController.class == [UITabBarController class])];
     }
 }

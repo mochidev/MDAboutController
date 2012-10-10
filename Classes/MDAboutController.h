@@ -38,7 +38,17 @@
 
 #import <MessageUI/MessageUI.h>
 #import <UIKit/UIKit.h>
-@class MDACCredit, MDACStyle;
+@class MDACCredit, MDACStyle, MDAboutController;
+
+@protocol MDAboutControllerDelegate <NSObject>
+
+@optional
+
+- (BOOL)aboutControllerShouldDisplayDoneButton:(MDAboutController *)aController;
+- (void)aboutControllerWillPresentMailController:(MDAboutController *)aController;
+- (void)aboutControllerDidDismissMailController:(MDAboutController *)aController;
+
+@end
 
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
   @private
@@ -58,6 +68,8 @@
     BOOL hasSimpleBackground;
     
     MDACStyle *style;
+    
+    id<MDAboutControllerDelegate> delegate;
 }
 
 - (id)initWithStyle:(MDACStyle *)style;
@@ -75,6 +87,8 @@
 
 @property (nonatomic, readonly) NSArray *credits; // for fast enumeration
 @property (nonatomic, readonly) NSUInteger creditCount;
+
+@property (nonatomic, assign) id<MDAboutControllerDelegate> delegate;
 
 - (void)addCredit:(MDACCredit *)aCredit;
 - (void)insertCredit:(MDACCredit *)aCredit atIndex:(NSUInteger)index;

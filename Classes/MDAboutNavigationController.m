@@ -51,6 +51,16 @@
     return self;
 }
 
+- (void)setDelegate:(id<MDAboutControllerDelegate>)delegate
+{
+    self.aboutController.delegate = delegate;
+}
+
+- (id<MDAboutControllerDelegate>)delegate
+{
+    return self.aboutController.delegate;
+}
+
 - (id)init
 {
     return [self initWithStyle:nil];
