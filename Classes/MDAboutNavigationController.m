@@ -84,7 +84,11 @@
 
 - (void)hideAbout:(MDACStyle *)sender
 {
-    [self dismissModalViewControllerAnimated:YES];
+    if ([self respondsToSelector:@selector(dismissViewControllerAnimated:completion:)]) {
+        [self dismissViewControllerAnimated:YES completion:NULL];
+    } else {
+        [self dismissModalViewControllerAnimated:YES];
+    }
 }
 
 @end

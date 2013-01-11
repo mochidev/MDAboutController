@@ -124,7 +124,11 @@
         if (self.navigationController) {
             [self.navigationController popViewControllerAnimated:YES];
         } else {
-            [self.modalViewController dismissModalViewControllerAnimated:YES];
+            if ([self respondsToSelector:@selector(presentedViewController)]) {
+                [self.presentedViewController dismissViewControllerAnimated:YES completion:NULL];
+            } else {
+                [self.modalViewController dismissModalViewControllerAnimated:YES];
+            }
         }      
     }
     [alertView autorelease];

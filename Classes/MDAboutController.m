@@ -112,8 +112,13 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 		
         UIImage *icon = nil;
         
-        if ([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFiles"]) {
-            NSArray *iconRefs = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFiles"];
+        NSArray *iconRefs = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFiles"];
+        
+        if (!iconRefs) {
+            iconRefs = [[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
+        }
+        
+        if (iconRefs) {
             
             float targetSize = 57.*[UIScreen mainScreen].scale;
             float lastSize = 0;
@@ -818,7 +823,11 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)dismiss:(id)sender
 {
-    [self dismissModalViewControllerAnimated:YES];
+    if ([self respondsToSelector:@selector(dismissViewControllerAnimated:completion:)]) {
+        [self dismissViewControllerAnimated:YES completion:NULL];
+    } else {
+        [self dismissModalViewControllerAnimated:YES];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
