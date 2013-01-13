@@ -70,7 +70,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)openMailToRecipient:(NSString *)recipient subject:(NSString *)subject;
 
-@property (nonatomic, retain, readwrite) MDACStyle *style;
+@property (nonatomic, strong, readwrite) MDACStyle *style;
 
 @end
 
@@ -153,7 +153,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 }
             }
             
-            [icons release];
         } else {
             icon = [UIImage imageNamed:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFile"]];
         }
@@ -181,7 +180,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                     }
                 }
             }
-            [creditsFile release];
         }
         
         int numClasses;
@@ -189,7 +187,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         numClasses = objc_getClassList(NULL, 0);
         
         if (numClasses > 0 ) {
-            classes = malloc(sizeof(Class) * numClasses);
+            classes = (Class *)malloc(sizeof(Class) * numClasses);
             numClasses = objc_getClassList(classes, numClasses);
             
             for (int i = 0; i < numClasses; i++) {
@@ -228,8 +226,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 - (void)setBackgroundColor:(UIColor *)aColor
 {
     if (backgroundColor != aColor) {
-        [backgroundColor release];
-        backgroundColor = [aColor retain];
+        backgroundColor = aColor;
         
         tableView.backgroundColor = backgroundColor;
         if ([self isViewLoaded])
@@ -247,16 +244,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     return style;
 }
 
-- (void)dealloc
-{
-    [style release];
-    [cachedCellCredits release];
-    [cachedCellHeights release];
-    [cachedCellIDs release];
-    [cachedCellIndices release];
-    [credits release];
-    [super dealloc];
-}
 
 - (void)didReceiveMemoryWarning
 {
@@ -272,10 +259,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)generateCachedCells
 {
-    [cachedCellCredits release];
-    [cachedCellHeights release];
-    [cachedCellIDs release];
-    [cachedCellIndices release];
     
     cachedCellCredits = [[NSMutableArray alloc] init];
     cachedCellHeights = [[NSMutableArray alloc] init];
@@ -416,7 +399,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     UIImageView *imageView = nil;
     
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
         
         if (cellID == MDACTopListCellID || cellID == MDACMiddleListCellID || cellID == MDACBottomListCellID || cellID == MDACSingleListCellID) {
             UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, [self.style listHeight])];
@@ -447,17 +430,13 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             
             backgroundImage.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             [backgroundView addSubview:backgroundImage];
-            [backgroundImage release];
             
             selectedBackgroundImage.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             [selectedBackgroundView addSubview:selectedBackgroundImage];
-            [selectedBackgroundImage release];
             
             cell.backgroundView = backgroundView;
-            [backgroundView release];
             
             cell.selectedBackgroundView = selectedBackgroundView;
-            [selectedBackgroundView release];
             
             textLabel = [[UILabel alloc] init];
             textLabel.font = [self.style listCellFont];
@@ -467,7 +446,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             textLabel.shadowOffset = [self.style listCellShadowOffset];
             textLabel.tag = 1;
             [cell.contentView addSubview:textLabel];
-            [textLabel release];
             
             detailTextLabel = [[UILabel alloc] init];
             detailTextLabel.font = [self.style listCellDetailFont];
@@ -481,14 +459,12 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             detailTextLabel.textAlignment = NSTextAlignmentRight;
             detailTextLabel.tag = 2;
             [cell.contentView addSubview:detailTextLabel];
-            [detailTextLabel release];
             
             linkAvailableImageView = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.bounds.size.width-39, 9, 24, 24)];
             linkAvailableImageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
             linkAvailableImageView.image = [self.style listCellLinkArrow];
             linkAvailableImageView.tag = 3;
             [cell.contentView addSubview:linkAvailableImageView];
-            [linkAvailableImageView release];
         } else if (cellID == MDACIconCellID) {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             containerView = [[UIView alloc] init];
@@ -513,8 +489,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             [containerView addSubview:iconBackground];
             [containerView addSubview:iconView];
             
-            [iconBackground release];
-            [iconView release];
             
             textLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/2.-17), 170, 22)];
             textLabel.font = [self.style iconCellFont];
@@ -525,7 +499,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             textLabel.shadowOffset = [self.style iconCellShadowOffset];
             textLabel.tag = 1;
             [containerView addSubview:textLabel];
-            [textLabel release];
             
             detailTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/2.+3), 170, 20)];
             detailTextLabel.font = [self.style iconCellDetailFont];
@@ -536,10 +509,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             detailTextLabel.shadowOffset = [self.style iconCellShadowOffset];
             detailTextLabel.tag = 2;
             [containerView addSubview:detailTextLabel];
-            [detailTextLabel release];
             
             [cell.contentView addSubview:containerView];
-            [containerView release];
         } else if (cellID == MDACListTitleCellID) {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -555,7 +526,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             textLabel.shadowOffset = [self.style listCellTitleShadowOffset];
             textLabel.tag = 1;
             [cell.contentView addSubview:textLabel];
-            [textLabel release];
         } else if (cellID == MDACTextCellID) {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -571,7 +541,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             textLabel.shadowOffset = [self.style textCellShadowOffset];
             textLabel.tag = 1;
             [cell.contentView addSubview:textLabel];
-            [textLabel release];
         } else if (cellID == MDACImageCellID) {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -582,7 +551,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             imageView.contentMode = UIViewContentModeScaleAspectFit;
             imageView.tag = 6;
             [cell.contentView addSubview:imageView];
-            [imageView release];
         } else {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
@@ -659,7 +627,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)openMailToRecipient:(NSString *)recipient subject:(NSString *)subject
 {
-    UIViewController *mailer = [[[NSClassFromString(@"MFMailComposeViewController") alloc] init] autorelease];
+    UIViewController *mailer = [[NSClassFromString(@"MFMailComposeViewController") alloc] init];
     [mailer performSelector:@selector(setMailComposeDelegate:) withObject:self];
     [mailer performSelector:@selector(setToRecipients:) withObject:[NSArray arrayWithObject:recipient]];
     [mailer performSelector:@selector(setSubject:) withObject:subject];
@@ -728,7 +696,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                     if (self.navigationController) {
                         UIViewController *viewController = [[ViewController alloc] init];
                         [self.navigationController pushViewController:viewController animated:YES];     
-                        [viewController release];
                     }
                 }
             } else if ([url.scheme isEqualToString:@"mailto"]) {
@@ -765,7 +732,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 
                 MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
                 [[self navigationController] pushViewController:linkViewController animated:YES];     
-                [linkViewController release];
             }
         }
     } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {
@@ -777,7 +743,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 
                 MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
                 [[self navigationController] pushViewController:linkViewController animated:YES];           
-                [linkViewController release];
             }
             
         }
@@ -804,7 +769,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     UIView *rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
     self.view = rootView;
     rootView.backgroundColor = self.backgroundColor;
-    [rootView release];
     
     tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, rootView.bounds.size.width, rootView.bounds.size.height-44) style:UITableViewStylePlain];
     tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
@@ -813,12 +777,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     tableView.dataSource = self;
     tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [rootView addSubview:tableView];
-    [tableView release];
     
     MDACTitleBar *aTitleBar = [[MDACTitleBar alloc] initWithController:self];
     aTitleBar.title = self.navigationItem.title;
     self.titleBar = aTitleBar;
-    [aTitleBar release];
 }
 
 - (void)dismiss:(id)sender
@@ -844,8 +806,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         [self.view addSubview:aTitleBar];
         [titleBar removeFromSuperview];
         
-        [titleBar release];
-        titleBar = [aTitleBar retain];
+        titleBar = aTitleBar;
         
         titleBar.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleWidth;
         
@@ -931,7 +892,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     [credits addObject:aCredit];
     
-    [cachedCellCredits release];
     cachedCellCredits = nil;
     
     [tableView reloadData];
@@ -941,7 +901,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     [credits insertObject:aCredit atIndex:index];
     
-    [cachedCellCredits release];
     cachedCellCredits = nil;
     
     [tableView reloadData];
@@ -951,7 +910,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     [credits replaceObjectAtIndex:index withObject:aCredit];
     
-    [cachedCellCredits release];
     cachedCellCredits = nil;
     
     [tableView reloadData];
@@ -961,7 +919,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     [credits removeLastObject];
     
-    [cachedCellCredits release];
     cachedCellCredits = nil;
     
     [tableView reloadData];
@@ -971,7 +928,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     [credits removeObject:aCredit];
     
-    [cachedCellCredits release];
     cachedCellCredits = nil;
     
     [tableView reloadData];
@@ -981,7 +937,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     [credits removeObjectAtIndex:index];
     
-    [cachedCellCredits release];
     cachedCellCredits = nil;
     
     [tableView reloadData];

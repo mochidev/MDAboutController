@@ -41,12 +41,12 @@
 
 + (id)style
 {
-    return [[[self alloc] init] autorelease];
+    return [[self alloc] init];
 }
 
 - (UIColor *)backgroundColor
 {
-    __strong static UIImage* tableViewBackgroundImage = nil;
+    __strong static UIImage *tableViewBackgroundImage = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         CGFloat scale = [[UIScreen mainScreen] scale];
@@ -63,7 +63,7 @@
             [[UIColor colorWithRed:203/255. green:208/255. blue:218/255. alpha:1] setFill];
             CGContextFillRect(c, CGRectMake(6, 0, 2, 1));
         }
-        tableViewBackgroundImage = [UIGraphicsGetImageFromCurrentImageContext() retain];
+        tableViewBackgroundImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
     });
     return [UIColor colorWithPatternImage:tableViewBackgroundImage];

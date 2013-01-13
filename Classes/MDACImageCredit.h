@@ -42,7 +42,7 @@
     UIImage *image;
 }
 
-@property(nonatomic, retain) UIImage *image;
+@property(nonatomic, strong) UIImage *image;
 - (id)initWithImage:(UIImage *)anImage;
 + (id)imageCreditWithImage:(UIImage *)anImage;
 - (id)initWithDictionary:(NSDictionary *)aDict;

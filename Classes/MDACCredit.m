@@ -56,7 +56,7 @@
 
 + (id)creditWithType:(NSString *)aType
 {
-    return [[[self alloc] initWithType:aType] autorelease];
+    return [[self alloc] initWithType:aType];
 }
 
 + (id)credit
@@ -64,11 +64,5 @@
     return [self creditWithType:nil];
 }
 
-- (void)dealloc
-{
-    [viewController release];
-    [type release];
-    [super dealloc];
-}
 
 @end

@@ -71,17 +71,17 @@
 
 + (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL
 {
-    return [[[self alloc] initWithName:aName role:aRole linkURL:anURL] autorelease];
+    return [[self alloc] initWithName:aName role:aRole linkURL:anURL];
 }
 
 + (id)itemWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink
 {
-    return [[[self alloc] initWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]] autorelease];
+    return [[self alloc] initWithName:aName role:aRole linkURL:[NSURL URLWithString:aLink]];
 }
 
 + (id)itemWithName:(NSString *)aName role:(NSString *)aRole viewController:(UIViewController *)aViewController
 {
-    return [[[self alloc] initWithName:aName role:aRole viewController:aViewController] autorelease];
+    return [[self alloc] initWithName:aName role:aRole viewController:aViewController];
 }
 
 + (id)item
@@ -104,24 +104,14 @@
         NSMutableDictionary *newDict = [aDict mutableCopy];
         [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Link", @"Email", @"Name", @"Role", @"Controller", nil]];
         self.userAssociations = newDict;
-        [newDict release];
     }
     return self;
 }
 
 + (id)itemWithDictionary:(NSDictionary *)aDict
 {
-    return [[[self alloc] initWithDictionary:aDict] autorelease];
+    return [[self alloc] initWithDictionary:aDict];
 }
 
-- (void)dealloc
-{
-    [userAssociations release];
-    [viewController release];
-    [name release];
-    [role release];
-    [link release];
-    [super dealloc];
-}
 
 @end

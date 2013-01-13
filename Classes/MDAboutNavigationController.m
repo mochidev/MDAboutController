@@ -46,7 +46,6 @@
     if (self = [super init]) {
         MDAboutController *aboutController = [[MDAboutController alloc] initWithStyle:style];
         [self pushViewController:aboutController animated:NO];
-        [aboutController release];
     }
     return self;
 }
@@ -85,7 +84,6 @@
     if (self.parentViewController.class != [UITabBarController class]) {
         UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(hideAbout:)];
         self.aboutController.navigationItem.rightBarButtonItem = doneButton;
-        [doneButton release];
     }
 }
 

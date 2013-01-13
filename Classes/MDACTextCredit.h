@@ -46,9 +46,9 @@
 }
 
 @property(nonatomic, copy) NSString *text;
-@property(nonatomic, retain) UIFont *font;
+@property(nonatomic, strong) UIFont *font;
 @property(nonatomic) UITextAlignment textAlignment;
-@property(nonatomic, retain) NSURL *link;
+@property(nonatomic, strong) NSURL *link;
 
 - (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
 - (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController;

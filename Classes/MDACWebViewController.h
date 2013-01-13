@@ -46,9 +46,9 @@
 
 - (id)initWithURL:(NSURL*)url;
 
-@property (nonatomic, retain) NSURL *webURL;
-@property (nonatomic, retain) UIActivityIndicatorView *activity;
-@property (nonatomic, retain) UIWebView *webView;
-@property (nonatomic, retain) UIAlertView *alert;
+@property (nonatomic, strong) NSURL *webURL;
+@property (nonatomic, strong) UIActivityIndicatorView *activity;
+@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) UIAlertView *alert;
 
 @end

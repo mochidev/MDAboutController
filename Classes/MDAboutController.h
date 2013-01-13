@@ -69,26 +69,26 @@
     
     MDACStyle *style;
     
-    id<MDAboutControllerDelegate> delegate;
+    id<MDAboutControllerDelegate> __weak delegate;
 }
 
 - (id)initWithStyle:(MDACStyle *)style;
 
 - (IBAction)dismiss:(id)sender; // hide if modal
 
-@property (nonatomic, readonly, retain) MDACStyle *style;
-@property (nonatomic, retain) UIView *titleBar;
+@property (nonatomic, readonly, strong) MDACStyle *style;
+@property (nonatomic, strong) UIView *titleBar;
 
 @property (nonatomic) BOOL showsTitleBar; // set to NO automatically when in navcontroller. 
 - (void)setShowsTitleBar:(BOOL)yn animated:(BOOL)animated;
 
-@property (nonatomic, retain) UIColor *backgroundColor;
+@property (nonatomic, strong) UIColor *backgroundColor;
 @property (nonatomic) BOOL hasSimpleBackground; // set automatically to YES for non patterend background. Set to YES for better performance, at the cost of a patterned background looking weird.
 
 @property (nonatomic, readonly) NSArray *credits; // for fast enumeration
 @property (nonatomic, readonly) NSUInteger creditCount;
 
-@property (nonatomic, assign) id<MDAboutControllerDelegate> delegate;
+@property (nonatomic, weak) id<MDAboutControllerDelegate> delegate;
 
 - (void)addCredit:(MDACCredit *)aCredit;
 - (void)insertCredit:(MDACCredit *)aCredit atIndex:(NSUInteger)index;

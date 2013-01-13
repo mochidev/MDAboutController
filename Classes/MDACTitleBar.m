@@ -48,7 +48,6 @@
         background.image = [UIImage imageNamed:@"MDACTitleBar.png"];
         background.contentMode = UIViewContentModeScaleToFill;
         [self addSubview:background];
-        [background release];
         
         title = [[UILabel alloc] initWithFrame:self.bounds];
         title.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -61,7 +60,6 @@
         title.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
         title.shadowOffset = CGSizeMake(0, -1);
         [self addSubview:title];
-        [title release];
         
         doneButton = [[UIButton alloc] initWithFrame:CGRectMake(self.bounds.size.width-55, 7, 50, 30)];
         doneButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
@@ -74,7 +72,6 @@
         doneButton.titleLabel.shadowOffset = CGSizeMake(0, -1);
         [doneButton addTarget:controller action:@selector(dismiss:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:doneButton];
-        [doneButton release];
     }
     return self;
 }

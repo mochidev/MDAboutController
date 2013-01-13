@@ -44,7 +44,7 @@
 }
 
 @property(nonatomic, copy) NSString *type;
-@property(nonatomic, retain) UIViewController *viewController;
+@property(nonatomic, strong) UIViewController *viewController;
 - (id)initWithType:(NSString *)aType;
 + (id)credit;
 + (id)creditWithType:(NSString *)aType;

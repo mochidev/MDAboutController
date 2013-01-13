@@ -61,7 +61,7 @@
 
 + (id)imageCreditWithImage:(UIImage *)anImage
 {
-    return [[[self alloc] initWithImage:anImage] autorelease];
+    return [[self alloc] initWithImage:anImage];
 }
 
 - (id)initWithDictionary:(NSDictionary *)aDict
@@ -71,12 +71,8 @@
 
 + (id)imageCreditWithDictionary:(NSDictionary *)aDict
 {
-    return [[[self alloc] initWithDictionary:aDict] autorelease];
+    return [[self alloc] initWithDictionary:aDict];
 }
 
-- (void)dealloc {
-    [image release];
-    [super dealloc];
-}
 
 @end

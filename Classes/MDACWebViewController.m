@@ -63,14 +63,11 @@
     
     [webView loadRequest:[NSURLRequest requestWithURL:webURL]];
     [self.view addSubview:webView];
-    [webView release];
     
     activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     UIBarButtonItem *loadButton = [[UIBarButtonItem alloc] initWithCustomView:activity];
     self.navigationItem.rightBarButtonItem = loadButton;
     self.navigationItem.title = @"Loading…";
-    [loadButton release];
-    [activity release];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -114,7 +111,6 @@
                               otherButtonTitles:nil];
     
 	[alert show];
-    [alert autorelease];
 }
 
 #pragma mark UI Alert delegate to pop back
@@ -127,7 +123,6 @@
             [self.presentedViewController dismissViewControllerAnimated:YES completion:NULL];
         }      
     }
-    [alertView autorelease];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -135,10 +130,5 @@
     return YES;
 }
 
-- (void)dealloc
-{
-    [webURL release];
-    [super dealloc];
-}
 
 @end

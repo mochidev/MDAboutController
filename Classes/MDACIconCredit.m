@@ -63,14 +63,8 @@
 
 + (id)iconCreditWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
 {
-    return [[[self alloc] initWithAppName:aName versionString:aVersionString icon:anImage] autorelease];
+    return [[self alloc] initWithAppName:aName versionString:aVersionString icon:anImage];
 }
 
-- (void)dealloc {
-    [appName release];
-    [versionString release];
-    [icon release];
-    [super dealloc];
-}
 
 @end

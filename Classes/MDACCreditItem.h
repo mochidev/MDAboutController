@@ -48,8 +48,8 @@
 @property(nonatomic, copy) NSString *name;
 @property(nonatomic, copy) NSString *role;
 @property(nonatomic, copy) NSDictionary *userAssociations;
-@property(nonatomic, retain) NSURL *link;
-@property(nonatomic, retain) UIViewController *viewController;
+@property(nonatomic, strong) NSURL *link;
+@property(nonatomic, strong) UIViewController *viewController;
 
 - (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL; // designated initializer
 - (id)initWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;

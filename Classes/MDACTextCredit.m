@@ -75,12 +75,12 @@
 
 + (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL
 {
-    return [[[self alloc] initWithText:aTitle font:aFont alignment:textAlign linkURL:anURL] autorelease];
+    return [[self alloc] initWithText:aTitle font:aFont alignment:textAlign linkURL:anURL];
 }
 
 + (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController
 {
-    return [[[self alloc] initWithText:aTitle font:aFont alignment:textAlign viewController:aViewController] autorelease];
+    return [[self alloc] initWithText:aTitle font:aFont alignment:textAlign viewController:aViewController];
 }
 
 - (id)initWithDictionary:(NSDictionary *)aDict
@@ -105,15 +105,8 @@
 
 + (id)textCreditWithDictionary:(NSDictionary *)aDict
 {
-    return [[[self alloc] initWithDictionary:aDict] autorelease];
+    return [[self alloc] initWithDictionary:aDict];
 }
 
-- (void)dealloc
-{
-    [text release];
-    [font release];
-    [link release];
-    [super dealloc];
-}
 
 @end

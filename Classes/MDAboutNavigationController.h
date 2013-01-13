@@ -43,7 +43,7 @@
 
 - (id)initWithStyle:(MDACStyle *)style;
 
-@property (nonatomic, readonly) MDAboutController *aboutController;
-@property (nonatomic, assign) id<MDAboutControllerDelegate> aboutControllerDelegate; // sets delegate for underlying aboutController, not an instance of this object! This means the underlying aboutController is returned through delegate methods!
+@property (weak, nonatomic, readonly) MDAboutController *aboutController;
+@property (nonatomic, weak) id<MDAboutControllerDelegate> aboutControllerDelegate; // sets delegate for underlying aboutController, not an instance of this object! This means the underlying aboutController is returned through delegate methods!
 
 @end

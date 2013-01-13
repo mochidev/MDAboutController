@@ -63,7 +63,7 @@
 
 + (id)listCreditWithTitle:(NSString *)aTitle
 {
-    return [[[self alloc] initWithTitle:aTitle] autorelease];
+    return [[self alloc] initWithTitle:aTitle];
 }
 
 - (id)initWithDictionary:(NSDictionary *)aDict
@@ -79,7 +79,7 @@
 
 + (id)listCreditWithDictionary:(NSDictionary *)aDict
 {
-    return [[[self alloc] initWithDictionary:aDict] autorelease];
+    return [[self alloc] initWithDictionary:aDict];
 }
 
 - (NSUInteger)count
@@ -102,10 +102,5 @@
     return [items objectAtIndex:index];
 }
 
-- (void)dealloc {
-    [title release];
-    [items release];
-    [super dealloc];
-}
 
 @end

@@ -46,7 +46,7 @@
 
 @property(nonatomic, copy) NSString *appName;
 @property(nonatomic, copy) NSString *versionString;
-@property(nonatomic, retain) UIImage *icon;
+@property(nonatomic, strong) UIImage *icon;
 - (id)initWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
 + (id)iconCreditWithAppName:(NSString *)aName versionString:(NSString *)aVersionString icon:(UIImage *)anImage;
 
