@@ -214,7 +214,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         
         [credits addObject:[MDACTextCredit textCreditWithText:@"About screen powered by MDAboutViewController, available free on GitHub!"
                                                          font:[UIFont boldSystemFontOfSize:11]
-                                                    alignment:UITextAlignmentCenter
+                                                    alignment:NSTextAlignmentCenter
                                                       linkURL:[NSURL URLWithString:@"https://github.com/mochidev/MDAboutControllerDemo"]]];
     }
     return self;
@@ -345,11 +345,11 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
                                                            constrainedToSize:CGSizeMake(450, 1000)
-                                                               lineBreakMode:UILineBreakModeWordWrap];
+                                                               lineBreakMode:NSLineBreakByWordWrapping];
             } else {
                 textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
                                                            constrainedToSize:CGSizeMake(300, 1000)
-                                                               lineBreakMode:UILineBreakModeWordWrap];
+                                                               lineBreakMode:NSLineBreakByWordWrapping];
             }
             
             [cachedCellCredits addObject:tempCredit];
@@ -471,14 +471,14 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             
             detailTextLabel = [[UILabel alloc] init];
             detailTextLabel.font = [self.style listCellDetailFont];
-            detailTextLabel.minimumFontSize = 12;
+            detailTextLabel.minimumScaleFactor = 0.8;
             detailTextLabel.adjustsFontSizeToFitWidth = YES;
             detailTextLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
             detailTextLabel.backgroundColor = [self.style listCellBackgroundColor];
             detailTextLabel.textColor = [self.style listCellDetailTextColor];
             detailTextLabel.shadowColor = [self.style listCellShadowColor];
             detailTextLabel.shadowOffset = [self.style listCellShadowOffset];
-            detailTextLabel.textAlignment = UITextAlignmentRight;
+            detailTextLabel.textAlignment = NSTextAlignmentRight;
             detailTextLabel.tag = 2;
             [cell.contentView addSubview:detailTextLabel];
             [detailTextLabel release];
@@ -545,7 +545,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             
             textLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, -10, cell.contentView.bounds.size.width-40, cell.contentView.bounds.size.height)];
             textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-            textLabel.lineBreakMode = UILineBreakModeTailTruncation;
+            textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             textLabel.numberOfLines = 0;
             textLabel.backgroundColor = [UIColor clearColor];
             textLabel.opaque = NO;
@@ -561,7 +561,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             
             textLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, cell.contentView.bounds.size.width-20, cell.contentView.bounds.size.height)];
             textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-            textLabel.lineBreakMode = UILineBreakModeWordWrap;
+            textLabel.lineBreakMode = NSLineBreakByWordWrapping;
             textLabel.numberOfLines = 0;
             textLabel.backgroundColor = [UIColor clearColor];
             textLabel.opaque = NO;
@@ -823,11 +823,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)dismiss:(id)sender
 {
-    if ([self respondsToSelector:@selector(dismissViewControllerAnimated:completion:)]) {
-        [self dismissViewControllerAnimated:YES completion:NULL];
-    } else {
-        [self dismissModalViewControllerAnimated:YES];
-    }
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 - (void)viewWillAppear:(BOOL)animated

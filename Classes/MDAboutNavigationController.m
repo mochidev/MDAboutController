@@ -51,12 +51,19 @@
     return self;
 }
 
-- (void)setDelegate:(id<MDAboutControllerDelegate>)delegate
+- (void)setDelegate:(id)delegate
 {
-    self.aboutController.delegate = delegate;
+    NSAssert(!([delegate conformsToProtocol:@protocol(MDAboutControllerDelegate)] && ![delegate conformsToProtocol:@protocol(UINavigationControllerDelegate)]), @"Please use setAboutControllerDelegate: instead to set the About Controller delegate.");
+    
+    [super setDelegate:delegate];
 }
 
-- (id<MDAboutControllerDelegate>)delegate
+- (void)setAboutControllerDelegate:(id<MDAboutControllerDelegate>)aboutControllerDelegate
+{
+    self.aboutController.delegate = aboutControllerDelegate;
+}
+
+- (id<MDAboutControllerDelegate>)aboutControllerDelegate
 {
     return self.aboutController.delegate;
 }
@@ -84,11 +91,7 @@
 
 - (void)hideAbout:(MDACStyle *)sender
 {
-    if ([self respondsToSelector:@selector(dismissViewControllerAnimated:completion:)]) {
-        [self dismissViewControllerAnimated:YES completion:NULL];
-    } else {
-        [self dismissModalViewControllerAnimated:YES];
-    }
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end

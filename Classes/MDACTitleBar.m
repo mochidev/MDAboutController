@@ -54,7 +54,7 @@
         title.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         title.backgroundColor = nil;
         title.opaque = NO;
-        title.textAlignment = UITextAlignmentCenter;
+        title.textAlignment = NSTextAlignmentCenter;
         title.textColor = [UIColor whiteColor];
         title.text = @"About";
         title.font = [UIFont boldSystemFontOfSize:20];

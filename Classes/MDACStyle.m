@@ -63,11 +63,10 @@
             [[UIColor colorWithRed:203/255. green:208/255. blue:218/255. alpha:1] setFill];
             CGContextFillRect(c, CGRectMake(6, 0, 2, 1));
         }
-        tableViewBackgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+        tableViewBackgroundImage = [UIGraphicsGetImageFromCurrentImageContext() retain];
         UIGraphicsEndImageContext();
     });
     return [UIColor colorWithPatternImage:tableViewBackgroundImage];
-    
 }
 
 - (BOOL)hasSimpleBackground
