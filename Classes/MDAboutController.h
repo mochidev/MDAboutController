@@ -45,6 +45,7 @@
 @optional
 
 - (BOOL)aboutControllerShouldDisplayDoneButton:(MDAboutController *)aController;
+- (UIViewController *)viewControllerToPresentMailController:(MDAboutController *)aController;
 - (void)aboutControllerWillPresentMailController:(MDAboutController *)aController;
 - (void)aboutControllerDidDismissMailController:(MDAboutController *)aController;
 

@@ -74,6 +74,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 @end
 
+@interface NSObject ()
++ (BOOL)canSendMail;
+@end
+
 @implementation MDAboutController
 
 @synthesize showsTitleBar, titleBar, backgroundColor, hasSimpleBackground, credits, style, delegate;
@@ -634,8 +638,12 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     UIViewController *parent = self;
     
-    if ([self isViewLoaded] && self.view.window.rootViewController != nil) {
-        parent = self.view.window.rootViewController;
+//    if ([self isViewLoaded] && self.view.window.rootViewController != nil) {
+//        parent = self.view.window.rootViewController;
+//    }
+    
+    if ([delegate respondsToSelector:@selector(viewControllerToPresentMailController:)]) {
+        parent = [delegate viewControllerToPresentMailController:self];
     }
     
     if ([delegate respondsToSelector:@selector(aboutControllerWillPresentMailController:)]) {
@@ -699,7 +707,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                     }
                 }
             } else if ([url.scheme isEqualToString:@"mailto"]) {
-                if (NSClassFromString(@"MFMailComposeViewController")) {
+                if (NSClassFromString(@"MFMailComposeViewController") && [NSClassFromString(@"MFMailComposeViewController") canSendMail]) {
                     NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
                     NSString *versionString = nil;
                     NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
