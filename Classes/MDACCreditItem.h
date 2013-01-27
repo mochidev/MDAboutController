@@ -50,6 +50,7 @@
 @property(nonatomic, copy) NSDictionary *userAssociations;
 @property(nonatomic, strong) NSURL *link;
 @property(nonatomic, strong) UIViewController *viewController;
+@property(nonatomic, copy) NSString *actionIdentifier;
 
 - (id)initWithName:(NSString *)aName role:(NSString *)aRole linkURL:(NSURL *)anURL; // designated initializer
 - (id)initWithName:(NSString *)aName role:(NSString *)aRole linkString:(NSString *)aLink;

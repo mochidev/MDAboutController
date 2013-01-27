@@ -113,6 +113,20 @@
 	[alert show];
 }
 
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    // Open App Store URLs via UIApplication
+    if ([[request.URL absoluteString] rangeOfString:@"itunes.apple.com"].location != NSNotFound)
+    {
+        [[UIApplication sharedApplication] openURL:request.URL];
+        return NO;
+    }
+    else
+    {
+        return YES;
+    }
+}
+
 #pragma mark UI Alert delegate to pop back
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {

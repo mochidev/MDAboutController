@@ -101,8 +101,9 @@
     if (self = [self initWithName:[aDict objectForKey:@"Name"]
                              role:[aDict objectForKey:@"Role"]
                        linkString:linkString]) {
+        self.actionIdentifier = aDict[@"Action"];
         NSMutableDictionary *newDict = [aDict mutableCopy];
-        [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Link", @"Email", @"Name", @"Role", @"Controller", nil]];
+        [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Link", @"Email", @"Name", @"Role", @"Controller", @"Action", nil]];
         self.userAssociations = newDict;
     }
     return self;
