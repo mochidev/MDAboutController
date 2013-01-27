@@ -681,7 +681,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 } else {
                     [[UIApplication sharedApplication] openURL:url];
                 }
-            } else if (!self.navigationController) {
+            } else if (!self.navigationController || ([[url absoluteString] rangeOfString:@"itunes.apple.com"].location != NSNotFound)) {
                 [[UIApplication sharedApplication] openURL:url];
             } else {
                 NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
