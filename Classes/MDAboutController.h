@@ -75,6 +75,8 @@
     id<MDAboutControllerDelegate> __weak delegate;
     
     BOOL reloadingCredits;
+    
+    UIImage *iconImage;
 }
 
 - (id)initWithStyle:(MDACStyle *)style;
