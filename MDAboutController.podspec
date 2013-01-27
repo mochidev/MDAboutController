@@ -1,7 +1,8 @@
 Pod::Spec.new do |s|
   s.name      = 'MDAboutController'
+  s.version  = '0.9'
   s.license  = 'MIT'
-  s.platform  = :ios
+  s.platform  = :ios, '6.0'
   s.summary   = 'Automatically populated about view controller for iOS apps.'
   s.homepage  = 'http://mochidev.com/'
   s.author    = { 'Dimitri Bouniol' =>  'dimitri008@mac.com' }
