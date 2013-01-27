@@ -571,7 +571,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         textLabel.textAlignment = [(MDACTextCredit *)credit textAlignment];
         textLabel.font = [(MDACTextCredit *)credit font];
         textLabel.text = [(MDACTextCredit *)credit text];
-        textLabel.highlighted = ([(MDACTextCredit *)credit link] != nil);
+        textLabel.highlighted = ([(MDACTextCredit *)credit link] || [(MDACTextCredit *)credit viewController]);
     } else if ([credit isMemberOfClass:[MDACImageCredit class]]) {
         imageView.image = [(MDACImageCredit *)credit image];
     }
@@ -632,10 +632,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     }
 }
 
-- (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)aTableView didHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
     MDACCredit *credit = nil;
     id cellID = nil;
     NSUInteger index = 0;
@@ -650,6 +648,73 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     if ((NSNull *)[cachedCellIDs objectAtIndex:indexPath.row] != [NSNull null])
         cellID = [cachedCellIDs objectAtIndex:indexPath.row];
+    
+    if ([credit isMemberOfClass:[MDACTextCredit class]] && ([(MDACTextCredit *)credit link] || [(MDACTextCredit *)credit viewController])) {
+        UITableViewCell *cell = [aTableView cellForRowAtIndexPath:indexPath];
+        UILabel *textLabel = (UILabel *)[cell.contentView viewWithTag:1];
+        
+        textLabel.highlighted = NO;
+    }
+}
+
+- (void)tableView:(UITableView *)aTableView didUnhighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *visibleCells = [aTableView visibleCells];
+    
+    for (UITableViewCell *cell in visibleCells) {
+        NSIndexPath *indexPath = [aTableView indexPathForCell:cell];
+        
+        MDACCredit *credit = nil;
+        id cellID = nil;
+        NSUInteger index = 0;
+        
+        [self generateCachedCellsIfNeeded];
+        
+        if ((NSNull *)[cachedCellCredits objectAtIndex:indexPath.row] != [NSNull null])
+            credit = [cachedCellCredits objectAtIndex:indexPath.row];
+        
+        if ((NSNull *)[cachedCellIndices objectAtIndex:indexPath.row] != [NSNull null])
+            index = [[cachedCellIndices objectAtIndex:indexPath.row] integerValue];
+        
+        if ((NSNull *)[cachedCellIDs objectAtIndex:indexPath.row] != [NSNull null])
+            cellID = [cachedCellIDs objectAtIndex:indexPath.row];
+        
+        if ([credit isMemberOfClass:[MDACTextCredit class]] && ([(MDACTextCredit *)credit link] || [(MDACTextCredit *)credit viewController])) {
+            UITableViewCell *cell = [aTableView cellForRowAtIndexPath:indexPath];
+            UILabel *textLabel = (UILabel *)[cell.contentView viewWithTag:1];
+            
+            textLabel.highlighted = YES;
+        }
+    }
+}
+
+- (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    MDACCredit *credit = nil;
+    id cellID = nil;
+    NSUInteger index = 0;
+    
+    [self generateCachedCellsIfNeeded];
+    
+    if (indexPath.row >= [cachedCellCredits count]) return;
+    
+    if ((NSNull *)[cachedCellCredits objectAtIndex:indexPath.row] != [NSNull null])
+        credit = [cachedCellCredits objectAtIndex:indexPath.row];
+    
+    if ((NSNull *)[cachedCellIndices objectAtIndex:indexPath.row] != [NSNull null])
+        index = [[cachedCellIndices objectAtIndex:indexPath.row] integerValue];
+    
+    if ((NSNull *)[cachedCellIDs objectAtIndex:indexPath.row] != [NSNull null])
+        cellID = [cachedCellIDs objectAtIndex:indexPath.row];
+    
+    if ([credit isMemberOfClass:[MDACTextCredit class]] && ([(MDACTextCredit *)credit link] || [(MDACTextCredit *)credit viewController])) {
+        UITableViewCell *cell = [aTableView cellForRowAtIndexPath:indexPath];
+        UILabel *textLabel = (UILabel *)[cell.contentView viewWithTag:1];
+        
+        textLabel.highlighted = YES;
+    }
     
     NSURL *url = nil;
     MDACCreditItem *item = nil;
