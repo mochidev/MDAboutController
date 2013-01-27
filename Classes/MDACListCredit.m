@@ -40,7 +40,7 @@
 
 @implementation MDACListCredit
 
-@synthesize title;
+@synthesize items;
 
 - (id)initWithTitle:(NSString *)aTitle
 {
@@ -69,6 +69,11 @@
 - (id)initWithDictionary:(NSDictionary *)aDict
 {
     if ((self = [self initWithTitle:[aDict objectForKey:@"Title"]])) {
+        self.identifier = [aDict objectForKey:@"Identifier"];
+        NSMutableDictionary *newDict = [aDict mutableCopy];
+        [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Title", @"Identifier", @"Items", nil]];
+        self.userAssociations = newDict;
+        
         NSArray *itemsList = [aDict objectForKey:@"Items"];
         for (NSDictionary *item in itemsList) {
             [self addItem:[MDACCreditItem itemWithDictionary:item]];

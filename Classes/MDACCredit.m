@@ -39,8 +39,6 @@
 
 @implementation MDACCredit
 
-@synthesize type, viewController;
-
 - (id)initWithType:(NSString *)aType
 {
     if ((self = [super init])) {

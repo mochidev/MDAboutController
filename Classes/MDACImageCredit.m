@@ -66,7 +66,14 @@
 
 - (id)initWithDictionary:(NSDictionary *)aDict
 {
-    return [self initWithImage:[UIImage imageNamed:[aDict objectForKey:@"Image"]]];
+    if (self = [self initWithImage:[UIImage imageNamed:[aDict objectForKey:@"Image"]]]) {
+        self.identifier = [aDict objectForKey:@"Identifier"];
+        NSMutableDictionary *newDict = [aDict mutableCopy];
+        [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Image", @"Identifier", nil]];
+        self.userAssociations = newDict;
+    }
+    
+    return self;
 }
 
 + (id)imageCreditWithDictionary:(NSDictionary *)aDict

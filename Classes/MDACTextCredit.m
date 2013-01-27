@@ -55,7 +55,7 @@
     return self;
 }
 
-- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(NSString *)aViewController
 {
     if ((self = [self initWithText:aTitle font:aFont alignment:textAlign linkURL:nil])) {
         self.viewController = aViewController;
@@ -78,7 +78,7 @@
     return [[self alloc] initWithText:aTitle font:aFont alignment:textAlign linkURL:anURL];
 }
 
-+ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(NSString *)aViewController
 {
     return [[self alloc] initWithText:aTitle font:aFont alignment:textAlign viewController:aViewController];
 }
@@ -97,10 +97,31 @@
         alignment = NSTextAlignmentRight;
     }
     
-    return [self initWithText:[aDict objectForKey:@"Text"]
-                         font:[UIFont boldSystemFontOfSize:fontSize]
-                    alignment:alignment
-                      linkURL:[NSURL URLWithString:[aDict objectForKey:@"Link"]]];
+    if ([aDict objectForKey:@"Controller"]) {
+        self = [self initWithText:[aDict objectForKey:@"Text"]
+                             font:[UIFont boldSystemFontOfSize:fontSize]
+                        alignment:alignment
+                   viewController:[aDict objectForKey:@"Controller"]];
+    } else {
+        NSString *linkString = [aDict objectForKey:@"Link"];
+        if (!linkString && [aDict objectForKey:@"Email"]) {
+            linkString = [NSString stringWithFormat:@"mailto:%@", [aDict objectForKey:@"Email"]];
+        }
+        
+        self = [self initWithText:[aDict objectForKey:@"Text"]
+                             font:[UIFont boldSystemFontOfSize:fontSize]
+                        alignment:alignment
+                          linkURL:[NSURL URLWithString:linkString]];
+    }
+    
+    if (self) {
+        self.identifier = [aDict objectForKey:@"Identifier"];
+        NSMutableDictionary *newDict = [aDict mutableCopy];
+        [newDict removeObjectsForKeys:[NSArray arrayWithObjects:@"Link", @"Email", @"Text", @"Size", @"Alignment", @"Controller", @"Identifier", nil]];
+        self.userAssociations = newDict;
+    }
+    
+    return self;
 }
 
 + (id)textCreditWithDictionary:(NSDictionary *)aDict

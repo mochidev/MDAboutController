@@ -537,7 +537,13 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             [textLabel sizeToFit];
             [detailTextLabel sizeToFit];
             
-            if ([(MDACListCredit *)credit itemAtIndex:index].link) {
+            BOOL selectable = ([(MDACListCredit *)credit itemAtIndex:index].link || [(MDACListCredit *)credit itemAtIndex:index].viewController);
+            
+            if ([delegate respondsToSelector:@selector(aboutController:isItemSelectable:fromCredit:withIdentifier:)]) {
+                selectable = [delegate aboutController:self isItemSelectable:[(MDACListCredit *)credit itemAtIndex:index] fromCredit:credit withIdentifier:[(MDACListCredit *)credit itemAtIndex:index].identifier];
+            }
+            
+            if (selectable) {
                 linkAvailableImageView.hidden = NO;
                 cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             } else {
@@ -645,70 +651,88 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     if ((NSNull *)[cachedCellIDs objectAtIndex:indexPath.row] != [NSNull null])
         cellID = [cachedCellIDs objectAtIndex:indexPath.row];
     
+    NSURL *url = nil;
+    MDACCreditItem *item = nil;
+    NSString *identifier = credit.identifier;
+    NSString *controllerName = credit.viewController;
     if ([credit isMemberOfClass:[MDACListCredit class]] && cellID != MDACListTitleCellID) {
-        MDACCreditItem *item = [(MDACListCredit *)credit itemAtIndex:index];
-        NSURL *url = item.link;
-        if (item.actionIdentifier) {
-            if ([self.delegate respondsToSelector:@selector(aboutController:pressedActionIdentifier:)]) {
-                [self.delegate aboutController:self pressedActionIdentifier:item.actionIdentifier];
-            }
-        } else if (url) {
-            if ([url.scheme isEqualToString:@"x-controller"]) {
-                Class ViewController = NSClassFromString([url resourceSpecifier]);
-                if ([ViewController isSubclassOfClass:[UIViewController class]]) {
-                    if (self.navigationController) {
-                        UIViewController *viewController = [[ViewController alloc] init];
-                        [self.navigationController pushViewController:viewController animated:YES];     
-                    }
-                }
-            } else if ([url.scheme isEqualToString:@"mailto"]) {
-                if (NSClassFromString(@"MFMailComposeViewController") && [NSClassFromString(@"MFMailComposeViewController") canSendMail]) {
-                    NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
-                    NSString *versionString = nil;
-                    NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-                    NSString *bundleVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-                    
-                    if (bundleShortVersionString && bundleVersionString) {
-                        versionString = [NSString stringWithFormat:@" %@ (%@)",
-                                         bundleShortVersionString,
-                                         bundleVersionString];
-                    } else if (bundleShortVersionString) {
-                        versionString = [NSString stringWithFormat:@" %@", bundleShortVersionString];
-                    } else if (bundleVersionString) {
-                        versionString = [NSString stringWithFormat:@" %@", bundleVersionString];
-                    }
-                    NSString *subject = [NSString stringWithFormat:@"%@%@ Support", appName, versionString];
-                    
-                    NSString *recipient = [url resourceSpecifier];
-                    if ([[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"]) {
-                        recipient = [NSString stringWithFormat:@"%@ <%@>", [[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"], recipient];
-                    }
-                    
-                    [self openMailToRecipient:recipient subject:subject];
-                } else {
-                    [[UIApplication sharedApplication] openURL:url];
-                }
-            } else if (!self.navigationController || ([[url absoluteString] rangeOfString:@"itunes.apple.com"].location != NSNotFound)) {
-                [[UIApplication sharedApplication] openURL:url];
-            } else {
-                NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
-                
-                MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
-                [[self navigationController] pushViewController:linkViewController animated:YES];     
-            }
-        }
+        item = [(MDACListCredit *)credit itemAtIndex:index];
+        url = item.link;
+        identifier = item.identifier;
+        controllerName = item.viewController;
     } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {
-        if ([(MDACTextCredit *)credit link]) {
-            if (!self.navigationController) {
-                [[UIApplication sharedApplication] openURL:[(MDACTextCredit *)credit link]];
-            } else {
-                NSURL *url =[(MDACTextCredit *)credit link];
-                
-                MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
-                [[self navigationController] pushViewController:linkViewController animated:YES];           
-            }
-            
+        url = [(MDACTextCredit *)credit link];
+    }
+    
+    Class ViewController = Nil;
+    
+    if (controllerName) {
+        ViewController = NSClassFromString(controllerName);
+        if (![ViewController isSubclassOfClass:[UIViewController class]]) {
+            ViewController = Nil;
         }
+    }
+    
+    if (ViewController) {
+        UIViewController *viewController = [[ViewController alloc] init];
+        if (![delegate respondsToSelector:@selector(aboutController:shouldPresentController:forItem:fromCredit:withIdentifier:)] || [delegate aboutController:self shouldPresentController:viewController forItem:item fromCredit:credit withIdentifier:identifier]) {
+            UIViewController *parentController = nil;
+            if ([delegate respondsToSelector:@selector(aboutController:viewControllerToPresentAuxiliaryController:forItem:fromCredit:withIdentifier:)]) {
+                parentController = [delegate aboutController:self viewControllerToPresentAuxiliaryController:viewController forItem:item fromCredit:credit withIdentifier:identifier];
+            }
+            if (parentController || !self.navigationController) {
+                if (!parentController) parentController = self;
+                if ([delegate respondsToSelector:@selector(aboutController:willPresentAuxiliaryController:forItem:fromCredit:withIdentifier:)]) {
+                    [delegate aboutController:self willPresentAuxiliaryController:viewController forItem:item fromCredit:credit withIdentifier:identifier];
+                }
+                [parentController presentViewController:viewController animated:YES completion:^{
+                    if ([delegate respondsToSelector:@selector(aboutController:didPresentAuxiliaryController:forItem:fromCredit:withIdentifier:)]) {
+                        [delegate aboutController:self didPresentAuxiliaryController:viewController forItem:item fromCredit:credit withIdentifier:identifier];
+                    }
+                }];
+            } else if (self.navigationController) {
+                UIViewController *viewController = [[ViewController alloc] init];
+                [self.navigationController pushViewController:viewController animated:YES];
+            }
+        }
+    } else if (url && (![delegate respondsToSelector:@selector(aboutController:shouldOpenURL:forItem:fromCredit:withIdentifier:)] || [delegate aboutController:self shouldOpenURL:url forItem:item fromCredit:credit withIdentifier:identifier])) {
+        if ([url.scheme isEqualToString:@"mailto"]) {
+            if (NSClassFromString(@"MFMailComposeViewController") && [NSClassFromString(@"MFMailComposeViewController") canSendMail]) {
+                NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+                NSString *versionString = nil;
+                NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+                NSString *bundleVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+                
+                if (bundleShortVersionString && bundleVersionString) {
+                    versionString = [NSString stringWithFormat:@" %@ (%@)",
+                                     bundleShortVersionString,
+                                     bundleVersionString];
+                } else if (bundleShortVersionString) {
+                    versionString = [NSString stringWithFormat:@" %@", bundleShortVersionString];
+                } else if (bundleVersionString) {
+                    versionString = [NSString stringWithFormat:@" %@", bundleVersionString];
+                }
+                NSString *subject = [NSString stringWithFormat:@"%@%@ Support", appName, versionString];
+                
+                NSString *recipient = [url resourceSpecifier];
+                if ([[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"]) {
+                    recipient = [NSString stringWithFormat:@"%@ <%@>", [[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"], recipient];
+                }
+                
+                [self openMailToRecipient:recipient subject:subject];
+            } else {
+                [[UIApplication sharedApplication] openURL:url];
+            }
+        } else if (!self.navigationController || ([[url absoluteString] rangeOfString:@"itunes.apple.com"].location != NSNotFound)) {
+            [[UIApplication sharedApplication] openURL:url];
+        } else {
+            MDACWebViewController *linkViewController = [[MDACWebViewController alloc] initWithURL:url];
+            [[self navigationController] pushViewController:linkViewController animated:YES];
+        }
+    }
+                   
+    if ([delegate respondsToSelector:@selector(aboutController:didSelectItem:fromCredit:withIdentifier:)]) {
+        [delegate aboutController:self didSelectItem:item fromCredit:credit withIdentifier:identifier];
     }
 }
 

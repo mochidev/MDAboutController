@@ -38,19 +38,31 @@
 
 #import <MessageUI/MessageUI.h>
 #import <UIKit/UIKit.h>
-@class MDACCredit, MDACStyle, MDAboutController;
+@class MDACCredit, MDACStyle, MDAboutController, MDACCreditItem;
 
 @protocol MDAboutControllerDelegate <NSObject>
 
 @optional
 
 - (BOOL)aboutControllerShouldDisplayDoneButton:(MDAboutController *)aController;
+
 - (UIViewController *)viewControllerToPresentMailController:(MDAboutController *)aController;
 - (void)aboutControllerWillPresentMailController:(MDAboutController *)aController;
 - (void)aboutControllerDidDismissMailController:(MDAboutController *)aController;
 
 - (void)aboutControllerDidReloadCredits:(MDAboutController *)aController;
-- (void)aboutController:(MDAboutController *)aController pressedActionIdentifier:(NSString*)actionIdentifier;
+// default is if item has a link or controller
+
+- (void)aboutController:(MDAboutController *)anAboutController didSelectItem:(MDACCreditItem *)item fromCredit:(MDACCredit *)credit withIdentifier:(NSString *)identifier;
+- (BOOL)aboutController:(MDAboutController *)anAboutController shouldOpenURL:(NSURL *)anURL forItem:(MDACCreditItem *)item fromCredit:(MDACCredit *)credit withIdentifier:(NSString *)identifier;
+- (BOOL)aboutController:(MDAboutController *)anAboutController shouldPresentController:(UIViewController *)aController forItem:(MDACCreditItem *)item fromCredit:(MDACCredit *)credit withIdentifier:(NSString *)identifier;
+// return NO if you want to display it yourself - default is YES
+
+- (BOOL)aboutController:(MDAboutController *)anAboutController isItemSelectable:(MDACCreditItem *)item fromCredit:(MDACCredit *)credit withIdentifier:(NSString *)identifier;
+
+- (UIViewController *)aboutController:(MDAboutController *)anAboutController viewControllerToPresentAuxiliaryController:(UIViewController *)aController forItem:(MDACCreditItem *)item fromCredit:(MDACCredit *)credit withIdentifier:(NSString *)identifier;
+- (void)aboutController:(MDAboutController *)anAboutController willPresentAuxiliaryController:(UIViewController *)aController forItem:(MDACCreditItem *)item fromCredit:(MDACCredit *)credit withIdentifier:(NSString *)identifier;
+- (void)aboutController:(MDAboutController *)anAboutController didPresentAuxiliaryController:(UIViewController *)aController forItem:(MDACCreditItem *)item fromCredit:(MDACCredit *)credit withIdentifier:(NSString *)identifier;
 @end
 
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {

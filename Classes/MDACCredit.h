@@ -37,14 +37,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MDACCredit : NSObject {
-    NSString *type;
-    
-    UIViewController *viewController;
-}
+@interface MDACCredit : NSObject
 
 @property(nonatomic, copy) NSString *type;
-@property(nonatomic, strong) UIViewController *viewController;
+@property(nonatomic, copy) NSString *viewController;
+@property(nonatomic, copy) NSString *identifier;
+@property(nonatomic, copy) NSDictionary *userAssociations;
+
 - (id)initWithType:(NSString *)aType;
 + (id)credit;
 + (id)creditWithType:(NSString *)aType;

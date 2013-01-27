@@ -38,12 +38,7 @@
 #import <UIKit/UIKit.h>
 #import "MDACCredit.h"
 
-@interface MDACTextCredit : MDACCredit {
-    NSString *text;
-    UIFont *font;
-    UITextAlignment textAlignment;
-    NSURL *link;
-}
+@interface MDACTextCredit : MDACCredit
 
 @property(nonatomic, copy) NSString *text;
 @property(nonatomic, strong) UIFont *font;
@@ -51,9 +46,9 @@
 @property(nonatomic, strong) NSURL *link;
 
 - (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
-- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController;
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(NSString *)aViewController;
 + (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
-+ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(UIViewController *)aViewController;
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(NSString *)aViewController;
 - (id)initWithDictionary:(NSDictionary *)aDict; // internal
 + (id)textCreditWithDictionary:(NSDictionary *)aDict; // internal
 

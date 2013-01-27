@@ -40,12 +40,13 @@
 @class MDACCreditItem;
 
 @interface MDACListCredit : MDACCredit {
-    NSString *title;
     NSMutableArray *items;
 }
 
 @property(nonatomic, copy) NSString *title;
 @property(nonatomic, readonly) NSUInteger count;
+@property(nonatomic, readonly) NSArray *items;
+
 - (id)initWithTitle:(NSString *)aTitle;
 + (id)listCreditWithTitle:(NSString *)aTitle;
 - (id)initWithDictionary:(NSDictionary *)aDict;
