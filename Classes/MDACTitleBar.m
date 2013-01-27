@@ -66,6 +66,8 @@
         [doneButton setBackgroundImage:[UIImage imageNamed:@"MDACDoneButton.png"] forState:UIControlStateNormal];
         [doneButton setBackgroundImage:[UIImage imageNamed:@"MDACDoneButtonPressed.png"] forState:UIControlStateHighlighted];
         [doneButton setTitle:@"Done" forState:UIControlStateNormal];
+//        [doneButton setTitle:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(hideAbout:)] title] forState:UIControlStateNormal];
+        // steal title, but doesn't work :/
         [doneButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [doneButton setTitleShadowColor:[UIColor colorWithWhite:0 alpha:0.6] forState:UIControlStateNormal];
         doneButton.titleLabel.font = [UIFont boldSystemFontOfSize:12];

@@ -74,6 +74,9 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 @property (nonatomic, strong, readwrite) NSString *creditsName;
 
 - (void)_reloadCreditsNow;
+- (NSString *)_localizedAboutString;
+- (NSString *)_shortLocalizedVersionFormatString;
+- (NSString *)_longLocalizedVersionFormatString;
 
 @end
 
@@ -98,7 +101,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         self.backgroundColor = [self.style backgroundColor];
         self.hasSimpleBackground = [self.style hasSimpleBackground];
         
-        self.navigationItem.title = @"About";
+        self.navigationItem.title = [self _localizedAboutString];
         
         credits = [[NSMutableArray alloc] init];
         
@@ -118,7 +121,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         self.backgroundColor = [self.style backgroundColor];
         self.hasSimpleBackground = [self.style hasSimpleBackground];
         
-        self.navigationItem.title = @"About";
+        self.navigationItem.title = [self _localizedAboutString];
         
         credits = [[NSMutableArray alloc] init];
         
@@ -852,28 +855,33 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     [credits removeAllObjects];
     
-    NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+    NSMutableDictionary *infoDict = [[[NSBundle mainBundle] infoDictionary] mutableCopy];
+    NSDictionary *localizedInfoDict = [[NSBundle mainBundle] localizedInfoDictionary];
+    
+    [infoDict addEntriesFromDictionary:localizedInfoDict];
+    
+    NSString *appName = [infoDict objectForKey:@"CFBundleDisplayName"];
     NSString *versionString = nil;
     
-    NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    NSString *bundleVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    NSString *bundleShortVersionString = [infoDict objectForKey:@"CFBundleShortVersionString"];
+    NSString *bundleVersionString = [infoDict objectForKey:@"CFBundleVersion"];
     
     if (bundleShortVersionString && bundleVersionString) {
-        versionString = [NSString stringWithFormat:@"Version %@ (%@)",
+        versionString = [NSString stringWithFormat:[self _longLocalizedVersionFormatString],
                          bundleShortVersionString,
                          bundleVersionString];
     } else if (bundleShortVersionString) {
-        versionString = [NSString stringWithFormat:@"Version %@", bundleShortVersionString];
+        versionString = [NSString stringWithFormat:[self _shortLocalizedVersionFormatString], bundleShortVersionString];
     } else if (bundleVersionString) {
-        versionString = [NSString stringWithFormat:@"Version %@", bundleVersionString];
+        versionString = [NSString stringWithFormat:[self _shortLocalizedVersionFormatString], bundleVersionString];
     }
     
     UIImage *icon = nil;
     
-    NSArray *iconRefs = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFiles"];
+    NSArray *iconRefs = [infoDict objectForKey:@"CFBundleIconFiles"];
     
     if (!iconRefs) {
-        iconRefs = [[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
+        iconRefs = [[[infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
     }
     
     if (iconRefs) {
@@ -912,7 +920,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         }
         
     } else {
-        icon = [UIImage imageNamed:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIconFile"]];
+        icon = [UIImage imageNamed:[infoDict objectForKey:@"CFBundleIconFile"]];
     }
     
     if (icon) {
@@ -922,7 +930,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     [credits addObject:[MDACIconCredit iconCreditWithAppName:appName versionString:versionString icon:icon]];
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"plist"];
+    NSString *path = [[NSBundle mainBundle] pathForResource:self.creditsName ofType:@"plist"];
     if (path) {
         NSArray *creditsFile = [[NSArray alloc] initWithContentsOfFile:path];
         if (creditsFile) {
@@ -1038,6 +1046,86 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 - (NSUInteger)creditCount
 {
     return [credits count];
+}
+
+#pragma mark - Localization
+
+- (NSString *)_localizedAboutString
+{
+    __strong static NSDictionary *locales = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        locales = @{
+        @"en" : @"About",
+        @"fr" : @"Informations",
+        @"ja" : @"情報"};
+    });
+    
+    NSString *formatString = nil;
+    
+    NSMutableArray *preferedLanguages = [[NSLocale preferredLanguages] mutableCopy];
+//    [preferedLanguages insertObject:[[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode] atIndex:0];
+    // That should have grabbed the current localization the app is in, but doesn't…
+    
+    for (NSString *languageCode in preferedLanguages) {
+        if ((formatString = [locales objectForKey:languageCode])) {
+            return formatString;
+        }
+    }
+    
+    return [locales objectForKey:@"en"];
+}
+
+- (NSString *)_shortLocalizedVersionFormatString
+{
+    __strong static NSDictionary *locales = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        locales = @{
+        @"en" : @"Version %@",
+        @"fr" : @"Version %@",
+        @"ja" : @"バージョン %@",
+        @"ar" : @"الإصدار %@"}; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
+    });
+    
+    NSString *formatString = nil;
+    
+    NSMutableArray *preferedLanguages = [[NSLocale preferredLanguages] mutableCopy];
+//    [preferedLanguages insertObject:[[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode] atIndex:0];
+    
+    for (NSString *languageCode in preferedLanguages) {
+        if ((formatString = [locales objectForKey:languageCode])) {
+            return formatString;
+        }
+    }
+    
+    return [locales objectForKey:@"en"];
+}
+
+- (NSString *)_longLocalizedVersionFormatString
+{
+    __strong static NSDictionary *locales = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        locales = @{
+        @"en" : @"Version %@ (%@)",
+        @"fr" : @"Version %@ (%@)",
+        @"ja" : @"バージョン %@ (%@)",
+        @"ar" : @"الإصدار %@ (%@)"}; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
+    });
+    
+    NSString *formatString = nil;
+    
+    NSMutableArray *preferedLanguages = [[NSLocale preferredLanguages] mutableCopy];
+//    [preferedLanguages insertObject:[[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode] atIndex:0];
+    
+    for (NSString *languageCode in preferedLanguages) {
+        if ((formatString = [locales objectForKey:languageCode])) {
+            return formatString;
+        }
+    }
+    
+    return [locales objectForKey:@"en"];
 }
 
 @end
