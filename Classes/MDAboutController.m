@@ -68,6 +68,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 - (void)generateCachedCells; // internal
 - (void)generateCachedCellsIfNeeded; // internal
 
+- (void)generateIconIfNeeded;
+
 - (void)openMailToRecipient:(NSString *)recipient subject:(NSString *)subject;
 
 @property (nonatomic, strong, readwrite) MDACStyle *style;
@@ -842,6 +844,76 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     return YES;
 }
 
+
+- (void)generateIconIfNeeded
+{
+    if (iconImage) return;
+    
+    NSMutableDictionary *infoDict = [[[NSBundle mainBundle] infoDictionary] mutableCopy];
+    BOOL iconPrerendered = NO;
+    
+    NSArray *iconRefs = [infoDict objectForKey:@"CFBundleIconFiles"];
+    iconPrerendered = [[infoDict objectForKey:@"UIPrerenderedIcon"] boolValue];
+    
+    if (!iconRefs) {
+        iconRefs = [[[infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
+        iconPrerendered = [[[[infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"UIPrerenderedIcon"] boolValue];
+    }
+    
+    if (iconRefs) {
+        
+        float targetSize = 57.*[UIScreen mainScreen].scale;
+        float lastSize = 0;
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            targetSize = 72.*[UIScreen mainScreen].scale;
+        }
+        
+        NSMutableArray *icons = [[NSMutableArray alloc] init];
+        
+        for (NSString *iconRef in iconRefs) {
+            UIImage *imageA = [UIImage imageNamed:iconRef];
+            
+            NSUInteger i = 0;
+            
+            for (i = 0; i < [icons count]; i++) {
+                UIImage *imageB = [icons objectAtIndex:i];
+                if (imageA.size.width*imageA.scale < imageB.size.width*imageB.scale)
+                    break;
+            }
+            
+            [icons insertObject:imageA atIndex:i];
+        }
+        
+        for (UIImage *testIcon in icons) {
+            if (testIcon.size.width*testIcon.scale > lastSize ) {
+                lastSize = testIcon.size.width*testIcon.scale;
+                iconImage = testIcon;
+                
+                if (testIcon.size.width*testIcon.scale >= targetSize)
+                    break;
+            }
+        }
+        
+    } else {
+        iconImage = [UIImage imageNamed:[infoDict objectForKey:@"CFBundleIconFile"]];
+    }
+    
+    if (iconImage) {
+        if (!iconPrerendered) {
+            UIImage *overlay = [UIImage imageNamed:@"MDACIconOverlay.png"];
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(iconImage.size.width*iconImage.scale, iconImage.size.height*iconImage.scale), NO, 1);
+            [iconImage drawAtPoint:CGPointZero];
+            [overlay drawInRect:CGRectMake(-1*overlay.scale, -1*overlay.scale, overlay.size.width*overlay.scale, overlay.size.height*overlay.scale)];
+            iconImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+        }
+        
+        UIImage *maskImage = [UIImage imageNamed:@"MDACIconMask.png"];
+        iconImage = [iconImage maskedImageWithMask:maskImage];
+    }
+}
+
 #pragma mark - Manipulating Credits
 
 - (void)reloadCredits
@@ -876,57 +948,9 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         versionString = [NSString stringWithFormat:[self _shortLocalizedVersionFormatString], bundleVersionString];
     }
     
-    UIImage *icon = nil;
+    [self generateIconIfNeeded];
     
-    NSArray *iconRefs = [infoDict objectForKey:@"CFBundleIconFiles"];
-    
-    if (!iconRefs) {
-        iconRefs = [[[infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
-    }
-    
-    if (iconRefs) {
-        
-        float targetSize = 57.*[UIScreen mainScreen].scale;
-        float lastSize = 0;
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            targetSize = 72.*[UIScreen mainScreen].scale;
-        }
-        
-        NSMutableArray *icons = [[NSMutableArray alloc] init];
-        
-        for (NSString *iconRef in iconRefs) {
-            UIImage *imageA = [UIImage imageNamed:iconRef];
-            
-            NSUInteger i = 0;
-            
-            for (i = 0; i < [icons count]; i++) {
-                UIImage *imageB = [icons objectAtIndex:i];
-                if (imageA.size.width*imageA.scale < imageB.size.width*imageB.scale)
-                    break;
-            }
-            
-            [icons insertObject:imageA atIndex:i];
-        }
-        
-        for (UIImage *testIcon in icons) {
-            if (testIcon.size.width*testIcon.scale > lastSize ) {
-                lastSize = testIcon.size.width*testIcon.scale;
-                icon = testIcon;
-                
-                if (testIcon.size.width*testIcon.scale >= targetSize)
-                    break;
-            }
-        }
-        
-    } else {
-        icon = [UIImage imageNamed:[infoDict objectForKey:@"CFBundleIconFile"]];
-    }
-    
-    if (icon) {
-        UIImage *maskImage = [UIImage imageNamed:@"MDACIconMask.png"];
-        icon = [icon maskedImageWithMask:maskImage];
-    }
+    UIImage *icon = iconImage;
     
     [credits addObject:[MDACIconCredit iconCreditWithAppName:appName versionString:versionString icon:icon]];
     
