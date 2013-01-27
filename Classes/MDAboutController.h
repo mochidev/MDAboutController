@@ -50,7 +50,7 @@
 - (void)aboutControllerDidDismissMailController:(MDAboutController *)aController;
 
 - (void)aboutControllerDidReloadCredits:(MDAboutController *)aController;
-
+- (void)aboutController:(MDAboutController *)aController pressedActionIdentifier:(NSString*)actionIdentifier;
 @end
 
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {

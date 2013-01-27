@@ -646,8 +646,13 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         cellID = [cachedCellIDs objectAtIndex:indexPath.row];
     
     if ([credit isMemberOfClass:[MDACListCredit class]] && cellID != MDACListTitleCellID) {
-        NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
-        if (url) {
+        MDACCreditItem *item = [(MDACListCredit *)credit itemAtIndex:index];
+        NSURL *url = item.link;
+        if (item.actionIdentifier) {
+            if ([self.delegate respondsToSelector:@selector(aboutController:pressedActionIdentifier:)]) {
+                [self.delegate aboutController:self pressedActionIdentifier:item.actionIdentifier];
+            }
+        } else if (url) {
             if ([url.scheme isEqualToString:@"x-controller"]) {
                 Class ViewController = NSClassFromString([url resourceSpecifier]);
                 if ([ViewController isSubclassOfClass:[UIViewController class]]) {
@@ -683,7 +688,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 } else {
                     [[UIApplication sharedApplication] openURL:url];
                 }
-            } else if (!self.navigationController) {
+            } else if (!self.navigationController || ([[url absoluteString] rangeOfString:@"itunes.apple.com"].location != NSNotFound)) {
                 [[UIApplication sharedApplication] openURL:url];
             } else {
                 NSURL *url = [(MDACListCredit *)credit itemAtIndex:index].link;
