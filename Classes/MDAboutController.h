@@ -49,6 +49,8 @@
 - (void)aboutControllerWillPresentMailController:(MDAboutController *)aController;
 - (void)aboutControllerDidDismissMailController:(MDAboutController *)aController;
 
+- (void)aboutControllerDidReloadCredits:(MDAboutController *)aController;
+
 @end
 
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
@@ -71,12 +73,17 @@
     MDACStyle *style;
     
     id<MDAboutControllerDelegate> __weak delegate;
+    
+    BOOL reloadingCredits;
 }
 
 - (id)initWithStyle:(MDACStyle *)style;
+- (id)initWithCreditsName:(NSString *)creditsName;
+- (id)initWithCreditsName:(NSString *)creditsName style:(MDACStyle *)style; // designated initializer
 
 - (IBAction)dismiss:(id)sender; // hide if modal
 
+@property (nonatomic, readonly, strong) NSString *creditsName;
 @property (nonatomic, readonly, strong) MDACStyle *style;
 @property (nonatomic, strong) UIView *titleBar;
 
@@ -84,17 +91,21 @@
 - (void)setShowsTitleBar:(BOOL)yn animated:(BOOL)animated;
 
 @property (nonatomic, strong) UIColor *backgroundColor;
-@property (nonatomic) BOOL hasSimpleBackground; // set automatically to YES for non patterend background. Set to YES for better performance, at the cost of a patterned background looking weird.
+@property (nonatomic) BOOL hasSimpleBackground; // set automatically to YES for non patterend background. Set to YES for better performance, at the cost of a patterned backgrounds looking weird.
+
+@property (nonatomic, weak) IBOutlet id<MDAboutControllerDelegate> delegate;
+
+- (void)reloadCredits;
 
 @property (nonatomic, readonly) NSArray *credits; // for fast enumeration
 @property (nonatomic, readonly) NSUInteger creditCount;
 
-@property (nonatomic, weak) id<MDAboutControllerDelegate> delegate;
+@property (nonatomic) BOOL showsAttributions; // To remove (:sadface:) the attributions, set to NO;
 
 - (void)addCredit:(MDACCredit *)aCredit;
 - (void)insertCredit:(MDACCredit *)aCredit atIndex:(NSUInteger)index;
 - (void)replaceCreditAtIndex:(NSUInteger)index withCredit:(MDACCredit *)aCredit;
-- (void)removeLastCredit;
+- (void)removeLastCredit __attribute__((deprecated));
 - (void)removeCredit:(MDACCredit *)aCredit;
 - (void)removeCreditAtIndex:(NSUInteger)index;
 
