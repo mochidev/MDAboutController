@@ -968,6 +968,11 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         for (NSString *iconRef in iconRefs) {
             UIImage *imageA = [UIImage imageNamed:iconRef];
             
+            if (!imageA) {
+                NSLog(@"%@: Warning: The icon `%@` was not found.", self, iconRef);
+                return;
+            }
+            
             NSUInteger i = 0;
             
             for (i = 0; i < [icons count]; i++) {
