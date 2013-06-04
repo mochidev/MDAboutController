@@ -763,7 +763,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     } else if (url && (![delegate respondsToSelector:@selector(aboutController:shouldOpenURL:forItem:fromCredit:withIdentifier:)] || [delegate aboutController:self shouldOpenURL:url forItem:item fromCredit:credit withIdentifier:identifier])) {
         if ([url.scheme isEqualToString:@"mailto"]) {
             if (NSClassFromString(@"MFMailComposeViewController") && [NSClassFromString(@"MFMailComposeViewController") canSendMail]) {
-                NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+                NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
                 NSString *versionString = nil;
                 NSString *bundleShortVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
                 NSString *bundleVersionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
