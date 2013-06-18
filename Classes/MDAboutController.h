@@ -65,6 +65,10 @@
 - (void)aboutController:(MDAboutController *)anAboutController didPresentAuxiliaryController:(UIViewController *)aController forItem:(MDACCreditItem *)item fromCredit:(MDACCredit *)credit withIdentifier:(NSString *)identifier;
 @end
 
+/*!
+ @class MDAboutController
+ A fully automatic about controller for iOS apps.
+ */
 @interface MDAboutController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
   @private
     UIView *titleBar;
@@ -91,10 +95,25 @@
     UIImage *iconImage;
 }
 
+/*!
+ @methodgroup Initializers
+ */
+
+/*!
+ @method -initWithStyle:
+ @param style
+ An initialized style of type MDACStyle to be used for the about  view. If nil, [MDACStyle style] will be used;
+ */
 - (id)initWithStyle:(MDACStyle *)style;
 - (id)initWithCreditsName:(NSString *)creditsName;
 - (id)initWithCreditsName:(NSString *)creditsName style:(MDACStyle *)style; // designated initializer
 
+/*!
+ @method -dismiss:
+ @abstract A convenience method for dismissing the view controller if shown modally.
+ @param sender
+ An initialized style of type MDACStyle to be used for the about  view. If nil, [MDACStyle style] will be used;
+ */
 - (IBAction)dismiss:(id)sender; // hide if modal
 
 @property (nonatomic, readonly, strong) NSString *creditsName;
