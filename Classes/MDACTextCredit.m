@@ -65,12 +65,12 @@
 
 - (id)initWithType:(NSString *)aType
 {
-    return [self initWithText:nil font:nil alignment:NSTextAlignmentCenter linkURL:nil];
+    return [self initWithText:nil font:nil alignment:UITextAlignmentCenter linkURL:nil];
 }
 
 + (id)creditWithType:(NSString *)aType
 {
-    return [self textCreditWithText:nil font:nil alignment:NSTextAlignmentCenter linkURL:nil];
+    return [self textCreditWithText:nil font:nil alignment:UITextAlignmentCenter linkURL:nil];
 }
 
 + (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL
@@ -89,12 +89,12 @@
     if ([aDict objectForKey:@"Size"])
         fontSize = [[aDict objectForKey:@"Size"] floatValue];
     
-    UITextAlignment alignment = NSTextAlignmentCenter;
+    UITextAlignment alignment = UITextAlignmentCenter;
     
     if ([[aDict objectForKey:@"Alignment"] isEqualToString:@"Left"]) {
-        alignment = NSTextAlignmentLeft;
+        alignment = UITextAlignmentLeft;
     } else if ([[aDict objectForKey:@"Alignment"] isEqualToString:@"Right"]) {
-        alignment = NSTextAlignmentRight;
+        alignment = UITextAlignmentRight;
     }
     
     if ([aDict objectForKey:@"Controller"]) {
