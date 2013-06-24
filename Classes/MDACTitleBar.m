@@ -69,7 +69,7 @@
 //        [doneButton setTitle:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(hideAbout:)] title] forState:UIControlStateNormal];
         // steal title, but doesn't work :/
         [doneButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [doneButton setTitleShadowColor:[UIColor colorWithWhite:0 alpha:0.6] forState:UIControlStateNormal];
+        [doneButton setTitleShadowColor:[UIColor colorWithWhite:0 alpha:(CGFloat)0.6] forState:UIControlStateNormal];
         doneButton.titleLabel.font = [UIFont boldSystemFontOfSize:12];
         doneButton.titleLabel.shadowOffset = CGSizeMake(0, -1);
         [doneButton addTarget:controller action:@selector(dismiss:) forControlEvents:UIControlEventTouchUpInside];

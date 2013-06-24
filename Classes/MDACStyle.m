@@ -53,14 +53,14 @@
         UIGraphicsBeginImageContextWithOptions(CGSizeMake(8.f, 1.f), NO, scale);
         CGContextRef c = UIGraphicsGetCurrentContext();
         if (scale > 1) {
-            [[UIColor colorWithRed:206/255. green:211/255. blue:220/255. alpha:1] setFill];
+            [[UIColor colorWithRed:(CGFloat)(206/255.) green:(CGFloat)(211/255.) blue:(CGFloat)(220/255.) alpha:1] setFill];
             CGContextFillRect(c, CGRectMake(0, 0, 5.5, 1));
-            [[UIColor colorWithRed:203/255. green:208/255. blue:218/255. alpha:1] setFill];
+            [[UIColor colorWithRed:(CGFloat)(203/255.) green:(CGFloat)(208/255.) blue:(CGFloat)(218/255.) alpha:1] setFill];
             CGContextFillRect(c, CGRectMake(5.5, 0, 2.5, 1));
         } else {
-            [[UIColor colorWithRed:206/255. green:211/255. blue:220/255. alpha:1] setFill];
+            [[UIColor colorWithRed:(CGFloat)(206/255.) green:(CGFloat)(211/255.) blue:(CGFloat)(220/255.) alpha:1] setFill];
             CGContextFillRect(c, CGRectMake(0, 0, 6, 1));
-            [[UIColor colorWithRed:203/255. green:208/255. blue:218/255. alpha:1] setFill];
+            [[UIColor colorWithRed:(CGFloat)(203/255.) green:(CGFloat)(208/255.) blue:(CGFloat)(218/255.) alpha:1] setFill];
             CGContextFillRect(c, CGRectMake(6, 0, 2, 1));
         }
         tableViewBackgroundColor = [UIColor colorWithPatternImage:UIGraphicsGetImageFromCurrentImageContext()];
@@ -146,7 +146,7 @@
 
 - (UIColor *)listCellBackgroundColor
 {
-    return [UIColor colorWithWhite:247./255. alpha:1];
+    return [UIColor colorWithWhite:(CGFloat)(247./255.) alpha:1];
 }
 
 - (UIColor *)listCellTextColor
@@ -156,12 +156,12 @@
 
 - (UIColor *)listCellDetailTextColor
 {
-    return [UIColor colorWithWhite:0 alpha:0.6];
+    return [UIColor colorWithWhite:0 alpha:(CGFloat)0.6];
 }
 
 - (UIColor *)listCellShadowColor
 {
-    return [UIColor colorWithWhite:253./255. alpha:0.6];
+    return [UIColor colorWithWhite:(CGFloat)(253./255.) alpha:(CGFloat)0.6];
 }
 
 - (CGSize)listCellShadowOffset
@@ -206,7 +206,7 @@
 
 - (UIColor *)iconCellTextColor
 {
-    return [UIColor colorWithRed:75./255. green:85./255. blue:109./255. alpha:1];
+    return [UIColor colorWithRed:(CGFloat)(75./255.) green:(CGFloat)(85./255.) blue:(CGFloat)(109./255.) alpha:1];
 }
 
 - (UIColor *)iconCellShadowColor
@@ -221,7 +221,7 @@
 
 - (UIColor *)textCellTextColor
 {
-    return [UIColor colorWithRed:75./255. green:85./255. blue:109./255. alpha:1];
+    return [UIColor colorWithRed:(CGFloat)(75./255.) green:(CGFloat)(85./255.) blue:(CGFloat)(109./255.) alpha:1];
 }
 
 - (UIColor *)textCellHighlightedTextColor
