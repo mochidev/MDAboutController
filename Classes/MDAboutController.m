@@ -950,8 +950,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     iconPrerendered = [[infoDict objectForKey:@"UIPrerenderedIcon"] boolValue];
     
     if (!iconRefs) {
-        iconRefs = [[[infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
-        iconPrerendered = [[[[infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"UIPrerenderedIcon"] boolValue];
+        iconRefs = [(NSDictionary *)[(NSDictionary *)[(NSDictionary *)infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
+        iconPrerendered = [[(NSDictionary *)[(NSDictionary *)[(NSDictionary *)infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"UIPrerenderedIcon"] boolValue];
     }
     
     if (iconRefs) {
