@@ -444,7 +444,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             [containerView addSubview:iconView];
             
             
-            textLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/2.-17), 170, 22)];
+            textLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/(CGFloat)(2.-17)), 170, 22)];
             textLabel.font = [self.style iconCellFont];
             textLabel.backgroundColor = [UIColor clearColor];
             textLabel.opaque = NO;
@@ -454,7 +454,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             textLabel.tag = 1;
             [containerView addSubview:textLabel];
             
-            detailTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/2.+3), 170, 20)];
+            detailTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+(CGFloat)25.0, floorf(10+iconView.bounds.size.height/(CGFloat)(2.+3)), 170, 20)];
             detailTextLabel.font = [self.style iconCellDetailFont];
             detailTextLabel.backgroundColor = [UIColor clearColor];
             detailTextLabel.opaque = NO;
@@ -565,7 +565,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         CGRect containerFrame = containerView.frame;
         containerFrame.size.width = iconView.bounds.size.width + 35 + MAX([textLabel sizeThatFits:CGSizeZero].width , [detailTextLabel sizeThatFits:CGSizeZero].width);
         if (containerFrame.size.width > 300) containerFrame.size.width = 300;
-        containerFrame.origin.x = roundf((cell.contentView.bounds.size.width-containerFrame.size.width)/2.);
+        containerFrame.origin.x = roundf((cell.contentView.bounds.size.width-containerFrame.size.width)/(CGFloat)2.);
         containerView.frame = containerFrame;
     } else if ([credit isMemberOfClass:[MDACTextCredit class]]) {
         textLabel.textAlignment = [(MDACTextCredit *)credit textAlignment];
@@ -950,17 +950,17 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     iconPrerendered = [[infoDict objectForKey:@"UIPrerenderedIcon"] boolValue];
     
     if (!iconRefs) {
-        iconRefs = [[[infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
-        iconPrerendered = [[[[infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"UIPrerenderedIcon"] boolValue];
+        iconRefs = [(NSDictionary *)[(NSDictionary *)[(NSDictionary *)infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
+        iconPrerendered = [[(NSDictionary *)[(NSDictionary *)[(NSDictionary *)infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"UIPrerenderedIcon"] boolValue];
     }
     
     if (iconRefs) {
         
-        float targetSize = 57.*[UIScreen mainScreen].scale;
+        CGFloat targetSize = (CGFloat)57.*[UIScreen mainScreen].scale;
         float lastSize = 0;
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            targetSize = 72.*[UIScreen mainScreen].scale;
+            targetSize = (CGFloat)72.*[UIScreen mainScreen].scale;
         }
         
         NSMutableArray *icons = [[NSMutableArray alloc] init];
