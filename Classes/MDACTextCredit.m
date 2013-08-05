@@ -41,7 +41,7 @@
 
 @synthesize text, font, link, textAlignment;
 
-- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign linkURL:(NSURL *)anURL
 {
     if ((self = [super initWithType:@"Text"])) {
         self.text = aTitle;
@@ -55,7 +55,7 @@
     return self;
 }
 
-- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(NSString *)aViewController
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign viewController:(NSString *)aViewController
 {
     if ((self = [self initWithText:aTitle font:aFont alignment:textAlign linkURL:nil])) {
         self.viewController = aViewController;
@@ -65,20 +65,20 @@
 
 - (id)initWithType:(NSString *)aType
 {
-    return [self initWithText:nil font:nil alignment:UITextAlignmentCenter linkURL:nil];
+    return [self initWithText:nil font:nil alignment:NSTextAlignmentCenter linkURL:nil];
 }
 
 + (id)creditWithType:(NSString *)aType
 {
-    return [self textCreditWithText:nil font:nil alignment:UITextAlignmentCenter linkURL:nil];
+    return [self textCreditWithText:nil font:nil alignment:NSTextAlignmentCenter linkURL:nil];
 }
 
-+ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign linkURL:(NSURL *)anURL
 {
     return [[self alloc] initWithText:aTitle font:aFont alignment:textAlign linkURL:anURL];
 }
 
-+ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(NSString *)aViewController
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign viewController:(NSString *)aViewController
 {
     return [[self alloc] initWithText:aTitle font:aFont alignment:textAlign viewController:aViewController];
 }
@@ -89,12 +89,12 @@
     if ([aDict objectForKey:@"Size"])
         fontSize = [[aDict objectForKey:@"Size"] floatValue];
     
-    UITextAlignment alignment = UITextAlignmentCenter;
+    NSTextAlignment alignment = NSTextAlignmentCenter;
     
     if ([[aDict objectForKey:@"Alignment"] isEqualToString:@"Left"]) {
-        alignment = UITextAlignmentLeft;
+        alignment = NSTextAlignmentLeft;
     } else if ([[aDict objectForKey:@"Alignment"] isEqualToString:@"Right"]) {
-        alignment = UITextAlignmentRight;
+        alignment = NSTextAlignmentRight;
     }
     
     if ([aDict objectForKey:@"Controller"]) {

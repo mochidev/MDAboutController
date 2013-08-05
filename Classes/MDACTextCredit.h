@@ -45,10 +45,10 @@
 @property(nonatomic) UITextAlignment textAlignment;
 @property(nonatomic, strong) NSURL *link;
 
-- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
-- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(NSString *)aViewController;
-+ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign linkURL:(NSURL *)anURL;
-+ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(UITextAlignment)textAlign viewController:(NSString *)aViewController;
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign linkURL:(NSURL *)anURL;
+- (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign viewController:(NSString *)aViewController;
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign linkURL:(NSURL *)anURL;
++ (id)textCreditWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign viewController:(NSString *)aViewController;
 - (id)initWithDictionary:(NSDictionary *)aDict; // internal
 + (id)textCreditWithDictionary:(NSDictionary *)aDict; // internal
 
