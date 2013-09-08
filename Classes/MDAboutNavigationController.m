@@ -44,8 +44,8 @@
 - (id)initWithStyle:(MDACStyle *)style
 {
     if (self = [super init]) {
-        MDAboutController *aboutController = [[MDAboutController alloc] initWithStyle:style];
-        [self pushViewController:aboutController animated:NO];
+        _aboutController = [[MDAboutController alloc] initWithStyle:style];
+        [self pushViewController:_aboutController animated:NO];
     }
     return self;
 }
@@ -67,6 +67,19 @@
     return self.aboutController.delegate;
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    if ([self.aboutController.style usesDarkNavigationBar]) {
+        self.navigationBar.barStyle = UIBarStyleBlack;
+    }
+    
+    if (self.aboutController.style.preferedTintColor && [self.view respondsToSelector:@selector(tintColor)]) {
+        self.view.tintColor = self.aboutController.style.preferedTintColor;
+    }
+}
+
 - (id)init
 {
     return [self initWithStyle:nil];
@@ -74,7 +87,7 @@
 
 - (MDAboutController *)aboutController
 {
-    return [[self viewControllers] objectAtIndex:0];
+    return _aboutController;
 }
 
 - (void)viewWillAppear:(BOOL)animated

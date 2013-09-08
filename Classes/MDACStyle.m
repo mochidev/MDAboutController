@@ -37,6 +37,8 @@
 
 #import "MDACStyle.h"
 
+#define MD_RUNNING_IOS7 (NSClassFromString(@"UIMotionEffect"))
+
 @implementation MDACStyle
 
 + (id)style
@@ -44,8 +46,16 @@
     return [[self alloc] init];
 }
 
+- (UIColor *)preferedTintColor
+{
+    return nil;
+}
+
 - (UIColor *)backgroundColor
 {
+    if (MD_RUNNING_IOS7) {
+        return [UIColor groupTableViewBackgroundColor];
+    }
     __strong static UIColor *tableViewBackgroundColor = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -72,6 +82,11 @@
 - (BOOL)hasSimpleBackground
 {
     return YES;
+}
+
+- (BOOL)usesDarkNavigationBar
+{
+    return NO;
 }
 
 - (CGFloat)spacerHeight
@@ -206,6 +221,9 @@
 
 - (UIColor *)iconCellTextColor
 {
+    if (MD_RUNNING_IOS7) {
+        return [UIColor blackColor];
+    }
     return [UIColor colorWithRed:(CGFloat)(75./255.) green:(CGFloat)(85./255.) blue:(CGFloat)(109./255.) alpha:1];
 }
 
@@ -221,6 +239,9 @@
 
 - (UIColor *)textCellTextColor
 {
+    if (MD_RUNNING_IOS7) {
+        return [UIColor darkGrayColor];
+    }
     return [UIColor colorWithRed:(CGFloat)(75./255.) green:(CGFloat)(85./255.) blue:(CGFloat)(109./255.) alpha:1];
 }
 

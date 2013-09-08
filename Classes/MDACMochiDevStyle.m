@@ -39,6 +39,11 @@
 
 @implementation MDACMochiDevStyle
 
+- (UIColor *)preferedTintColor
+{
+    return [UIColor colorWithWhite:1 alpha:0.8];
+}
+
 - (UIColor *)backgroundColor
 {
     return [UIColor colorWithPatternImage:[UIImage imageNamed:@"MDACBackground.png"]];
@@ -47,6 +52,11 @@
 - (BOOL)hasSimpleBackground
 {
     return NO;
+}
+
+- (BOOL)usesDarkNavigationBar
+{
+    return YES;
 }
 
 - (UIImage *)listCellBackgroundTop

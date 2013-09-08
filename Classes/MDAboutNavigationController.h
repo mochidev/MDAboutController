@@ -39,7 +39,9 @@
 @class MDAboutController, MDACStyle;
 @protocol MDAboutControllerDelegate;
 
-@interface MDAboutNavigationController : UINavigationController
+@interface MDAboutNavigationController : UINavigationController {
+    MDAboutController *_aboutController;
+}
 
 - (id)initWithStyle:(MDACStyle *)style;
 

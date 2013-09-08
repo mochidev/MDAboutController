@@ -75,7 +75,7 @@
     [super viewWillAppear:animated];
     
     CGFloat toolbarHeight = 0;
-    if (!self.navigationController.navigationBarHidden && self.navigationController.navigationBar.translucent) {
+    if (!self.navigationController.navigationBarHidden && self.navigationController.navigationBar.translucent && ![self respondsToSelector:@selector(topLayoutGuide)]) {
         toolbarHeight = self.navigationController.navigationBar.frame.size.height;
     }
     

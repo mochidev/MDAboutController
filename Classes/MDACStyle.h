@@ -41,8 +41,14 @@
 
 + (id)style;
 
+@property (nonatomic, strong, readonly) UIColor *tintColor; // so you can return the current tint color?
+
+- (UIColor *)preferedTintColor;
+
 - (UIColor *)backgroundColor;
 - (BOOL)hasSimpleBackground;
+
+- (BOOL)usesDarkNavigationBar;
 
 - (CGFloat)spacerHeight;
 - (CGFloat)listHeight;

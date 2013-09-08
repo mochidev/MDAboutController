@@ -354,6 +354,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+        cell.contentView.superview.clipsToBounds = NO; // get that pesky scrollview...
+        cell.backgroundColor = self.backgroundColor;
         
         if (cellID == MDACTopListCellID || cellID == MDACMiddleListCellID || cellID == MDACBottomListCellID || cellID == MDACSingleListCellID) {
             UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, [self.style listHeight])];
@@ -389,7 +391,6 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             [selectedBackgroundView addSubview:selectedBackgroundImage];
             
             cell.backgroundView = backgroundView;
-            
             cell.selectedBackgroundView = selectedBackgroundView;
             
             textLabel = [[UILabel alloc] init];
@@ -444,7 +445,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             [containerView addSubview:iconView];
             
             
-            textLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+25, floorf(10+iconView.bounds.size.height/(CGFloat)(2.-17)), 170, 22)];
+            textLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width + 25., floorf(10. + iconView.bounds.size.height/2. - 17.), 170., 22.)];
             textLabel.font = [self.style iconCellFont];
             textLabel.backgroundColor = [UIColor clearColor];
             textLabel.opaque = NO;
@@ -454,7 +455,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             textLabel.tag = 1;
             [containerView addSubview:textLabel];
             
-            detailTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width+(CGFloat)25.0, floorf(10+iconView.bounds.size.height/(CGFloat)(2.+3)), 170, 20)];
+            detailTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(iconView.bounds.size.width + 25., floorf(10+iconView.bounds.size.height/2. + 3.), 170., 20.)];
             detailTextLabel.font = [self.style iconCellDetailFont];
             detailTextLabel.backgroundColor = [UIColor clearColor];
             detailTextLabel.opaque = NO;
@@ -804,10 +805,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self generateCachedCellsIfNeeded];
-    CGFloat toolbarHeight = 0;
-    if (indexPath.section == 0 && indexPath.row == 0 && !self.navigationController.navigationBarHidden && self.navigationController.navigationBar.translucent)
-        toolbarHeight = self.navigationController.navigationBar.frame.size.height;
-    return [[cachedCellHeights objectAtIndex:indexPath.row] floatValue] + toolbarHeight;
+    return [[cachedCellHeights objectAtIndex:indexPath.row] floatValue];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -849,6 +847,11 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         [(MDACTitleBar *)titleBar setButtonHidden:![delegate aboutControllerShouldDisplayDoneButton:self]];
     } else if ([titleBar isMemberOfClass:[MDACTitleBar class]]) {
         [(MDACTitleBar *)titleBar setButtonHidden:(self.parentViewController.class == [UITabBarController class])];
+    }
+    
+    if (!self.navigationController.navigationBarHidden && self.navigationController.navigationBar.translucent && ![self respondsToSelector:@selector(topLayoutGuide)]) {
+        tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.bounds.size.height, 0, 0, 0);
+        tableView.scrollIndicatorInsets = UIEdgeInsetsMake(self.navigationController.navigationBar.bounds.size.height, 0, 0, 0);
     }
 }
 
