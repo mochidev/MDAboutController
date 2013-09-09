@@ -355,7 +355,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
         cell.contentView.superview.clipsToBounds = NO; // get that pesky scrollview...
-        cell.backgroundColor = self.backgroundColor;
+        if (self.hasSimpleBackground)
+            cell.backgroundColor = self.backgroundColor;
         
         if (cellID == MDACTopListCellID || cellID == MDACMiddleListCellID || cellID == MDACBottomListCellID || cellID == MDACSingleListCellID) {
             UIView *backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, [self.style listHeight])];
@@ -1020,7 +1021,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (void)reloadCredits
 {
-    if (!reloadingCredits) [self performSelector:@selector(_reloadCreditsNow) withObject:nil afterDelay:0];
+    if (!reloadingCredits) {
+        reloadingCredits = YES;
+        [self performSelector:@selector(_reloadCreditsNow) withObject:nil afterDelay:0];
+    }
 }
 
 - (void)_reloadCreditsNow
@@ -1178,14 +1182,13 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (NSString *)_localizedAboutString
 {
-    __strong static NSDictionary *locales = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        locales = @{
+    static NSDictionary *locales = nil;
+    if (!locales) {
+        locales = [[NSDictionary alloc] initWithDictionary:@{
         @"en" : @"About",
         @"fr" : @"Informations",
-        @"ja" : @"情報"};
-    });
+        @"ja" : @"情報"}];
+    }
     
     NSString *formatString = nil;
     
@@ -1204,15 +1207,14 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (NSString *)_shortLocalizedVersionFormatString
 {
-    __strong static NSDictionary *locales = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        locales = @{
+    static NSDictionary *locales = nil;
+    if (!locales) {
+        locales = [[NSDictionary alloc] initWithDictionary:@{
         @"en" : @"Version %@",
         @"fr" : @"Version %@",
         @"ja" : @"バージョン %@",
-        @"ar" : @"الإصدار %@"}; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
-    });
+        @"ar" : @"الإصدار %@"}]; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
+    }
     
     NSString *formatString = nil;
     
@@ -1230,15 +1232,14 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 
 - (NSString *)_longLocalizedVersionFormatString
 {
-    __strong static NSDictionary *locales = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        locales = @{
-        @"en" : @"Version %@ (%@)",
-        @"fr" : @"Version %@ (%@)",
-        @"ja" : @"バージョン %@ (%@)",
-        @"ar" : @"الإصدار %@ (%@)"}; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
-    });
+    static NSDictionary *locales = nil;
+    if (!locales) {
+        locales = [[NSDictionary alloc] initWithDictionary:@{
+                    @"en" : @"Version %@ (%@)",
+                    @"fr" : @"Version %@ (%@)",
+                    @"ja" : @"バージョン %@ (%@)",
+                    @"ar" : @"الإصدار %@ (%@)"}]; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
+    }
     
     NSString *formatString = nil;
     
