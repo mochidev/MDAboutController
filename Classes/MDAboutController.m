@@ -1184,10 +1184,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     static NSDictionary *locales = nil;
     if (!locales) {
-        locales = [[NSDictionary alloc] initWithDictionary:@{
+        locales = [@{
         @"en" : @"About",
         @"fr" : @"Informations",
-        @"ja" : @"情報"}];
+        @"ja" : @"情報"} copy];
     }
     
     NSString *formatString = nil;
@@ -1209,11 +1209,11 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     static NSDictionary *locales = nil;
     if (!locales) {
-        locales = [[NSDictionary alloc] initWithDictionary:@{
+        locales = [@{
         @"en" : @"Version %@",
         @"fr" : @"Version %@",
         @"ja" : @"バージョン %@",
-        @"ar" : @"الإصدار %@"}]; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
+        @"ar" : @"الإصدار %@"} copy]; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
     }
     
     NSString *formatString = nil;
@@ -1234,11 +1234,11 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 {
     static NSDictionary *locales = nil;
     if (!locales) {
-        locales = [[NSDictionary alloc] initWithDictionary:@{
+        locales = [@{
                     @"en" : @"Version %@ (%@)",
                     @"fr" : @"Version %@ (%@)",
                     @"ja" : @"バージョン %@ (%@)",
-                    @"ar" : @"الإصدار %@ (%@)"}]; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
+                    @"ar" : @"الإصدار %@ (%@)"} copy]; // Check /System/Library/CoreServices/SystemVersion.bundle/ for more!
     }
     
     NSString *formatString = nil;
