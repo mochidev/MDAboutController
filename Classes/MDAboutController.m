@@ -611,8 +611,8 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
     // dear compiler warning... shut up
     // the following should be fully backwards compatible.
     if ([parent respondsToSelector:@selector(presentViewController:animated:completion:)]) {
-        objc_msgSend(parent, @selector(presentViewController:animated:completion:), mailer, YES, NULL);
-//        [self presentViewController:mailer animated:YES completion:NULL];
+//        objc_msgSend(parent, @selector(presentViewController:animated:completion:), mailer, YES, NULL);
+        [self presentViewController:mailer animated:YES completion:NULL];
     } else {
         objc_msgSend(parent, @selector(presentModalViewController:animated:), mailer, YES);
 //        [self presentModalViewController:mailer animated:YES];
@@ -784,6 +784,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
                 NSString *recipient = [url resourceSpecifier];
                 if ([[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"]) {
                     recipient = [NSString stringWithFormat:@"%@ <%@>", [[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"EmailName"], recipient];
+                }
+                
+                if ([[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"Subject"]) {
+                    subject = [[(MDACListCredit *)credit itemAtIndex:index].userAssociations objectForKey:@"Subject"];
                 }
                 
                 [self openMailToRecipient:recipient subject:subject];
@@ -958,14 +962,27 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         iconPrerendered = [[(NSDictionary *)[(NSDictionary *)[(NSDictionary *)infoDict objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"UIPrerenderedIcon"] boolValue];
     }
     
-    if (iconRefs) {
+    CGFloat targetSize = 57;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        targetSize = 72;
+    }
+    
+    
+    if (NSClassFromString(@"UIMotionEffect")) {
+        iconPrerendered = YES;
         
-        CGFloat targetSize = (CGFloat)57.*[UIScreen mainScreen].scale;
-        float lastSize = 0;
+        targetSize = 60;
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            targetSize = (CGFloat)72.*[UIScreen mainScreen].scale;
+            targetSize = 76;
         }
+    }
+    
+    targetSize *= [UIScreen mainScreen].scale;
+    
+    if (iconRefs) {
+        float lastSize = 0;
         
         NSMutableArray *icons = [[NSMutableArray alloc] init];
         
