@@ -290,7 +290,7 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             }
             
             [cachedCellCredits addObject:tempCredit];
-            [cachedCellHeights addObject:[NSNumber numberWithFloat:textSize.height]];
+            [cachedCellHeights addObject:[NSNumber numberWithFloat:textSize.height+2]];
             [cachedCellIDs addObject:MDACTextCellID];
             [cachedCellIndices addObject:[NSNull null]];
         } else if ([tempCredit isMemberOfClass:[MDACImageCredit class]]) {
