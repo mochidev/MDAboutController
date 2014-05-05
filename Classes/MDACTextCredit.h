@@ -42,7 +42,7 @@
 
 @property(nonatomic, copy) NSString *text;
 @property(nonatomic, strong) UIFont *font;
-@property(nonatomic) UITextAlignment textAlignment;
+@property(nonatomic) NSTextAlignment textAlignment;
 @property(nonatomic, strong) NSURL *link;
 
 - (id)initWithText:(NSString *)aTitle font:(UIFont *)aFont alignment:(NSTextAlignment)textAlign linkURL:(NSURL *)anURL;

@@ -143,3 +143,9 @@
 - (void)removeCreditAtIndex:(NSUInteger)index;
 
 @end
+
+@interface NSObject (MDAboutControllerAttributions)
+
++ (NSDictionary *)MDAboutControllerTextCreditDictionary;
+
+@end
