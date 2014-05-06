@@ -369,12 +369,12 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             UIView *selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, [self.style listHeight])];
             
             UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, [self.style listHeight])];
-            UIImageView *selectedBackgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, tableView.bounds.size.width-20, [self.style listHeight])];
+            UIImageView *selectedBackgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0.5, tableView.bounds.size.width-20, [self.style listHeight])];
             
             if (cellID == MDACTopListCellID) {
                 backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, [self.style listHeight]+1);
                 backgroundImage.image = [self.style listCellBackgroundTop];
-                selectedBackgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, [self.style listHeight]+1);
+                selectedBackgroundImage.frame = CGRectMake(10, -0.5, tableView.bounds.size.width-20, [self.style listHeight]+1);
                 selectedBackgroundImage.image = [self.style listCellBackgroundTopSelected];
             } else if (cellID == MDACMiddleListCellID) {
                 backgroundImage.image = [self.style listCellBackgroundMiddle];
@@ -382,12 +382,12 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             } else if (cellID == MDACBottomListCellID) {
                 backgroundImage.frame = CGRectMake(10, 0, tableView.bounds.size.width-20, [self.style listHeight]+1);
                 backgroundImage.image = [self.style listCellBackgroundBottom];
-                selectedBackgroundImage.frame = CGRectMake(10, 0, tableView.bounds.size.width-20, [self.style listHeight]+1);
+                selectedBackgroundImage.frame = CGRectMake(10, 0.5, tableView.bounds.size.width-20, [self.style listHeight]+1);
                 selectedBackgroundImage.image = [self.style listCellBackgroundBottomSelected];
             } else {
                 backgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, [self.style listHeight]+2);
                 backgroundImage.image = [self.style listCellBackgroundSingle];
-                selectedBackgroundImage.frame = CGRectMake(10, -1, tableView.bounds.size.width-20, [self.style listHeight]+2);
+                selectedBackgroundImage.frame = CGRectMake(10, -0.5, tableView.bounds.size.width-20, [self.style listHeight]+2);
                 selectedBackgroundImage.image = [self.style listCellBackgroundSingleSelected];
             }
             
