@@ -269,6 +269,12 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
                 iconHeight = 72;
             
+            if (NSClassFromString(@"UIMotionEffect")) {
+                iconHeight = 60;
+                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+                    iconHeight = 76;
+            }
+            
             iconHeight += [self.style iconAdditionalHeight];
             
             [cachedCellCredits addObject:tempCredit];
@@ -430,12 +436,24 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             iconView = [[UIImageView alloc] init];
             UIImageView *iconBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"MDACIconShadow.png"]];
             
+            float iconHeight = 57;
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+                iconHeight = 72;
+            
+            if (NSClassFromString(@"UIMotionEffect")) {
+                iconHeight = 60;
+                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+                    iconHeight = 76;
+                
+                iconBackground.image = nil;
+            }
+            
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                iconView.frame = CGRectMake(0, 0, 72, 72);
-                containerView.frame = CGRectMake(roundf((cell.contentView.bounds.size.width-212)/2.), 0, 212, 92);
+                iconView.frame = CGRectMake(0, 0, iconHeight, iconHeight);
+                containerView.frame = CGRectMake(roundf((cell.contentView.bounds.size.width-212)/2.), 0, 212, iconHeight + 20);
             } else {
-                iconView.frame = CGRectMake(0, 0, 57, 57);
-                containerView.frame = CGRectMake(roundf((cell.contentView.bounds.size.width-198)/2.), 0, 198, 77);
+                iconView.frame = CGRectMake(0, 0, iconHeight, iconHeight);
+                containerView.frame = CGRectMake(roundf((cell.contentView.bounds.size.width-198)/2.), 0, 198, iconHeight + 20);
             }
             
             iconBackground.center = CGPointMake(10+iconView.bounds.size.width/2., containerView.bounds.size.height/2.+3);
@@ -1030,6 +1048,20 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
         }
         
         UIImage *maskImage = [UIImage imageNamed:@"MDACIconMask.png"];
+        
+        if (NSClassFromString(@"UIMotionEffect")) {
+            maskImage = [UIImage imageNamed:@"MDACIconMask-ios7.png"];
+            
+            UIGraphicsBeginImageContextWithOptions(maskImage.size, YES, maskImage.scale);
+            
+            [[UIColor whiteColor] setFill];
+            UIRectFill(CGRectMake(0, 0, maskImage.size.width, maskImage.size.height));
+            [maskImage drawAtPoint:CGPointZero];
+            
+            maskImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+        }
+        
         iconImage = [iconImage maskedImageWithMask:maskImage];
     }
 }
