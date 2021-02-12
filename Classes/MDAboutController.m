@@ -632,7 +632,10 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
 //        objc_msgSend(parent, @selector(presentViewController:animated:completion:), mailer, YES, NULL);
         [self presentViewController:mailer animated:YES completion:NULL];
     } else {
-        objc_msgSend(parent, @selector(presentModalViewController:animated:), mailer, YES);
+        typedef void (*presentViewController_type)(UIViewController *, SEL, UIViewController *, BOOL);
+        presentViewController_type presentViewController = (presentViewController_type)objc_msgSend;
+        
+        presentViewController(parent, @selector(presentModalViewController:animated:), mailer, YES);
 //        [self presentModalViewController:mailer animated:YES];
     }
 }
