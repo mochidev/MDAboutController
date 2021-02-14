@@ -286,13 +286,13 @@ static NSString *MDACImageCellID        = @"MDACImageCell";
             
             CGSize textSize = CGSizeMake(300, 30);
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
-                                                           constrainedToSize:CGSizeMake(450, 1000)
-                                                               lineBreakMode:NSLineBreakByWordWrapping];
+                textSize = [[(MDACTextCredit *)tempCredit text] boundingRectWithSize:CGSizeMake(450, 1000)
+                                                                             options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                                                                          attributes:@{NSFontAttributeName:[(MDACTextCredit *)tempCredit font]} context:nil].size;
             } else {
-                textSize = [[(MDACTextCredit *)tempCredit text] sizeWithFont:[(MDACTextCredit *)tempCredit font]
-                                                           constrainedToSize:CGSizeMake(300, 1000)
-                                                               lineBreakMode:NSLineBreakByWordWrapping];
+                textSize = [[(MDACTextCredit *)tempCredit text] boundingRectWithSize:CGSizeMake(300, 1000)
+                                                                             options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                                                                          attributes:@{NSFontAttributeName:[(MDACTextCredit *)tempCredit font]} context:nil].size;
             }
             
             [cachedCellCredits addObject:tempCredit];
